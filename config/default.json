@@ -1,0 +1,39 @@
+{
+    "pca9685": {
+        "A": {
+            "freq": "120", 
+            "correctionFactor": "1.0",
+            "address": "0x40", 
+            "device": "/dev/i2c-1"
+        },
+        "B": {
+            "freq": "120",
+            "correctionFactor": "1.0",
+            "address": "0x41",
+            "device": "/dev/i2c-1"
+        }
+    },
+    "pinmapper": {
+        "0" :  { "driver": "B", "pin": 15},
+        "1" :  { "driver": "B", "pin": 14},
+        "2" :  { "driver": "B", "pin": 13},
+        "3" :  { "driver": "B", "pin": 12},
+        "4" :  { "driver": "B", "pin": 11},
+        "5" :  { "driver": "B", "pin": 10},
+        "6" :  { "driver": "B", "pin": 9},
+        "7" :  { "driver": "B", "pin": 8},
+        "8" :  { "driver": "B", "pin": 7},
+        "9" :  { "driver": "A", "pin": 0},
+        "10" : { "driver": "A", "pin": 1},
+        "11" : { "driver": "A", "pin": 2},
+        "12" : { "driver": "A", "pin": 3},
+        "13" : { "driver": "A", "pin": 4},
+        "14" : { "driver": "A", "pin": 5},
+        "15" : { "driver": "A", "pin": 6},
+        "16" : { "driver": "A", "pin": 7},
+        "17" : { "driver": "A", "pin": 8}
+    },
+    "animations": {
+
+    }
+}

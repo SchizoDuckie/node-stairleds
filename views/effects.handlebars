@@ -1,0 +1,324 @@
+<div class="row">
+    <div class="col-md-7">
+        <!-- PCA9685 1 -->
+        <div class="card shadow pca9685" id="pca9685_1">
+            <div class="card-header py-3">
+                <div class="row">
+                    <div class="col">
+                        <h3 class="text-primary"><i class="fa fa-lightbulb"></i>&nbsp;LED Effect 1</h3>
+                        <p class="text-primary m-0 font-weight-bold"></p>
+                    </div>
+                 
+                </div>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                <h4>Fade</h4>
+                    <!-- use pre-fade -->
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="usefade"><strong>Pre-/Post-fade</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" id="useprefade" type="checkbox" placeholder="" name="use-fade-start" value="1" {{#if anim.USE_FADE_START }} checked="checked" {{/if}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="useprefade">
+                                        <strong>Pre-fade leds</strong><br>
+                                        Fade all leds to the fade strength set below before starting the animation
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" id="usepostfade" type="checkbox" placeholder="" name="use-fade-end" value="1" {{#if anim.USE_FADE_END }}checked="checked" {{/if}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="usepostfade">
+                                        <strong>Post-fade leds</strong><br>
+                                        Fade all leds to the fade strength set below after the animation is done, and then off.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- fade brightness -->
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="prefade-brightness">
+                                    <strong>Fade Brightness</strong>
+                                </label>
+                            </div>
+                        </div>
+                        <div class='col-md-8'>
+                            <div class="d-flex justify-content-center ">
+                                <span class="font-weight-bold blue-text mr-2 mt-1">0%</span>
+                                
+                                <input class="border-0 custom-range form-control" type="range" min="0" max="4096" name="fade-brightness" value="{{ anim.FADE_BRIGHTNESS }}"/>
+                            
+                                <span class="font-weight-bold blue-text ml-2 mt-1">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- fade duration -->
+                    <div class='form-row'>
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="fade-duration">
+                                    <strong>Fade Duration</strong>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-4 ">
+                            <div class="input-group">
+                                <input class="form-control" type="number" size="3" min="1" max="1000" name="fade-duration" value="{{ anim.FADE_DURATION }}">
+                                <label class="input-group-addon">&nbsp; /10th seconds</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- max fade strength -->
+                    <hr>
+                    <h4>On Animation </h4>
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="animationtype"><strong>Animation Type</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" type="radio" name="anim-strategy" value="1" id='anim-type-one' {{#if_eq anim.ANIM_STRATEGY anim.ANIMATION_STRATEGIES.ONE_AT_A_TIME }}checked{{/if_eq}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="anim-type-one">
+                                        <strong>One By One</strong><br>
+                                        Animate each step after the next
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col col-md-2"> 
+                                    <input class="form-control" type="radio" name="anim-strategy" value="2" id='anim-type-all' {{#if_eq anim.ANIM_STRATEGY anim.ANIMATION_STRATEGIES.ALL_AT_ONCE }}checked{{/if_eq}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="anim-type-all">
+                                        <strong>All at once</strong><br>
+                                        Animate all stair leds at once
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" type="radio" name="anim-strategy" value="4" id='anim-type-profile' {{#if_eq anim.ANIM_STRATEGY anim.ANIMATION_STRATEGIES.PROFILE }}checked{{/if_eq}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="anim-type-profile">
+                                        <strong>Use profile -&gt;</strong><br>
+                                        Use custom brightness for each step (this unlocks advanced options)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="usepostfade"><strong>Max LED Brightness</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="d-flex justify-content-center ">
+                            <span class="font-weight-bold blue-text mr-2 mt-1">0</span>
+                                <input class="form-control custom-range border-0" type="range" min="0" max="4095" name="max-brightness" value="{{ anim.MAX_BRIGHTNESS }}">
+                            <span class="font-weight-bold blue-text mr-2 mt-1">&nbsp;4095</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="usepostfade"><strong>LED Brightness profile</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-md-8 linkable">
+                            Led brightness will be set to this percentage of Max LED Brightness per individual tred 
+                            <div class="d-flex justify-content-center ">
+                                {{#each anim.animation as | value | }}
+                                <input id="anim-{{@index}}" name="animation[{{@index}}]" type="range" data-slider-min="0" data-slider-max="100"
+                                    data-slider-step="1" data-slider-orientation="vertical" data-slider-value="{{value}}" />
+                                {{/each}}
+                            </div>
+                            <hr>
+                            <div class="form-group d-flex justify-content-center ">
+                                <label for="linksliders"><input type="checkbox" id="linksliders" value="1">Link Sliders</label> 
+                            </div>
+                        </div>
+                    </div>
+                
+                    <hr>
+                    <!-- animation shifting -->
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="shifting"><strong>Animation Shifting</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" id="shifting" type="checkbox" placeholder="" name="anim-shifting" value="1"
+                                        {{#if anim.ANIM_SHIFTING }} checked="" {{/if}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="shifting">
+                                        <strong>Shift LED profile</strong><br>
+                                        Fifo fade led profile to the next to create a 'running' pattern. Last led will become first and so
+                                        on.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- shift steps -->
+                    <div class='form-row'>
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="shift-steps">
+                                    <strong>Shift Steps</strong>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                                Amount of times the animation should shift. -1 for infinite.
+                            <div class="form-row">
+                                <div class="col col-md-4">
+                                    <div class="input-group">
+                                        <input class="form-control" id='shift-steps' type="number" size="3" min="1" max="1000" name="anim-shift-steps"
+                                            value="{{ anim.ANIM_SHIFT_STEPS }}"> <label class="input-group-addon">&nbsp; Steps </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <!-- step duration -->
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="usepostfade"><strong>Step Duration</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <input class="form-control" type="number" size="3" min="1" max="1000" name="anim-duration"
+                                    value="{{anim.ANIM_DURATION}}">
+                                <label class="input-group-addon">&nbsp; milliseconds</label>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <h4>Off Animation </h4>
+                    <div class="form-row">
+                        <div class=" col-md-4">
+                            <div class="form-group">
+                                <label for="animationtype"><strong>Animation Type</strong></label>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" type="radio" id="off-anim-type-one" name="off-anim-type" value="1" id='anim-type-one' {{#if_eq anim.ANIM_OFF_STRATEGY anim.ANIMATION_OFF_STRATEGIES.ALL_AT_ONCE }}checked{{/if_eq}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="off-anim-type-one">
+                                        <strong>All at once</strong><br>
+                                        Fade all leds to off or minimum fade brightness
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" type="radio" id="off-anim-type-sequence" name="off-anim-type" value="2" id='anim-type-all' {{#if_eq anim.ANIM_OFF_STRATEGY anim.ANIMATION_OFF_STRATEGIES.SEQUENCE }}checked{{/if_eq}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="off-anim-type-sequence">
+                                        <strong>Sequence</strong><br>
+                                        Replay On-animation, but fade out instead of in
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col col-md-2">
+                                    <input class="form-control" type="radio" id="off-anim-type-reverse-sequence" name="off-anim-type" value="4" id='anim-type-profile' {{#if_eq anim.ANIM_OFF_STRATEGY anim.ANIMATION_OFF_STRATEGIES.REVERSE_SEQUENCE }}checked{{/if_eq}}>
+                                </div>
+                                <div class="col col-md-10">
+                                    <label for="off-anim-type-reverse-sequence">
+                                        <strong>Reverse sequence</strong><br>
+                                        Replay On-animation, but fade out instead of in, start at the last step turned on.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <hr>
+                
+                    <div class="form-row">
+                        <div class="form-group">
+                            <button class='btn btn-default' type="submit"><i class="fa fa-save"></i> Save</button>
+                            <button class='btn btn-success' name="test" value="runtest"><i class="fa fa-play"></i> Test</button>
+
+                            <button class="btn btn-outline-warning btn-xl" onclick="socket.send('stopdemo'); return false;">
+                                <i class="fa fa-stop"></i>
+                                Stop Test
+                            </button>
+                            
+                            
+                            <button class="btn btn-outline-danger btn-xl" onclick="socket.send('cleardemo'); return false;">
+                                <i class="fa fa-power-off"></i>
+                                All leds off
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // With JQuery
+$("[data-slider-min]").slider({
+            reversed: true,
+            tooltip: 'always'
+        });
+
+window.linkSliders = $("#linksliders");
+
+
+function brightnessChange(e) {
+    console.log("brightness change!");
+    let brightness = $(this).val();
+    if (linkSliders.prop("checked")) {
+        console.log('change all!');
+        $(".linkable input[type=range]").val(brightness).slider('setValue', brightness, false);
+    }
+}
+
+$("[data-slider-min]").on("change",  brightnessChange )
+
+</script>

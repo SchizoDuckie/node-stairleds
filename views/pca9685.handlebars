@@ -1,0 +1,226 @@
+<h3 class="text-dark mb-4"><i class="fa fa-microchip"></i>&nbsp;PCA9685 Pin Mappings</h3>
+<form method="post">
+<div class="row">
+    <div class="col">
+        <p>Configure the port mappings for your stair leds here. You can verify which led is connected to which step
+            by using the test green test buttons and sliders 
+            <button type='submit' class='btn btn-outline-danger btn-sm'><i class='fa fa-save'></i> Save Changes</button>
+        </p>
+    </div>
+</div>
+<section></section>
+<div class="row">
+    <div class="col-md-6">
+        <!-- PCA9685 1 -->
+        <div class="card shadow pca9685" id="pca9685_1">
+            <div class="card-header py-3">
+                <div class="row">
+                    <div class="col">
+                        <h3 class="text-primary"><i class="fa fa-microchip"></i>&nbsp;LED Driver A</h3>
+                        <p class="text-primary m-0 font-weight-bold"></p>
+                    </div>
+                    <div class="col"><label class="col-form-label text-nowrap text-right float-right">I²C
+                            address:&nbsp;<select name="i2c_1"
+                                class="i2caddress form-control form-control-sm custom-select custom-select-sm"
+                                style="width: 80px;">
+                                <option value="0x40" selected>0x40</option>
+                                <option value="0x41">0x41</option>
+                            </select>&nbsp;</label></div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table mt-2" id="dataTable" role="grid"
+                    aria-describedby="dataTable_info">
+                    <table class="table table-sm dataTable my-0" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th><label for="allinputs1" style="margin:0"> <input type="checkbox"
+                                            class="allinputs" id='allinputs1'> Use</label></th>
+                                <th>Port #</th>
+                                <th>Step #</th>
+                                <td></td>
+                                <th>Test <label for="linksliders" style="float:right; margin:0"> 
+                                    <input type="checkbox" class="linksliders" id='linksliders'> Link all
+                                        sliders
+                                    </label><br>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each pca9685_A}}
+                            <tr{{#if_neq this null }} class="table-active"{{/if_neq}}>
+                                <td><input type="checkbox" class="form-control"  {{#if_neq this null }}checked{{/if_neq}}></td>
+                                <td>{{inc @key}}</td>
+                                <td><input class="bg-dark border rounded {{#if_eq this null }}border-dark{{/if_eq}}{{#if_neq this null }}border-primary{{/if_neq}} form-control-sm" type="number" name="pca9685_A[1_{{ @key }}]" {{#if_eq this null }}disabled="disabled"{{/if_eq}} style="color: #b1b1b1;width: 60px;" {{#if_neq this null }}value="{{ this }}" {{/if_neq}}></td>
+                                <td> <button class='btn btn-sm btn-outline-success' data-identify><i class='fa fa-lightbulb'></i></button>   </td>
+                                <td><input class="custom-range" type="range" value="0" min="0" max="4095" data-number="{{@key}}" ><br></td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <!-- PCA9685 2 -->
+        <div class="card pca9685" id="pca9685_2">
+            <div class="card-header py-3">
+                <div class="row">
+                    <div class="col">
+                        <h3 class="text-primary"><i class="fa fa-microchip"></i>&nbsp;LED Driver B</h3>
+                        <p class="text-primary m-0 font-weight-bold"></p>
+                    </div>
+                    <div class="col"><label class="col-form-label text-nowrap text-right float-right">I²C
+                            address:&nbsp;<select name="i2c_2"
+                                class="i2caddress form-control form-control-sm custom-select custom-select-sm"
+                                style="width: 80px;">
+                                <option value="0x40">0x40</option>
+                                <option value="0x41" selected>0x41</option>
+                            </select>&nbsp;</label></div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive table mt-2" id="dataTable" role="grid"
+                    aria-describedby="dataTable_info">
+                    <table class="table table-sm dataTable my-0" id="dataTable">
+                        <thead>
+                            <tr>
+                                <th><label for="allinputs2" style="margin:0"> <input type="checkbox" 
+                                            class="allinputs" id='allinputs2'> Use</label></th>
+                                <th>Port #</th>
+                                <th>Step #</th>
+                                <td></td>
+                                <th>Test</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                             <tbody>
+                            {{#each pca9685_B}}
+                            <tr{{#if_neq this null }} class="table-active"{{/if_neq}}>
+                                <td><input type="checkbox" class="form-control"  {{#if_neq this null }}checked{{/if_neq}}></td>
+                                <td>{{inc @key}}</td>
+                                <td><input class="bg-dark border rounded {{#if_eq this null }}border-dark{{/if_eq}}{{#if_neq this null }}border-primary{{/if_neq}} form-control-sm" type="number" name="pca9685_B[1_{{ @key }}]" {{#if_eq this null }}disabled="disabled"{{/if_eq}} style="color: #b1b1b1;width: 60px;" {{#if_neq this null }}value="{{ this }}" {{/if_neq}}></td>
+                                <td> <button class='btn btn-sm btn-outline-success' data-identify><i class='fa fa-lightbulb'></i></button>   </td>
+                                <td><input class="custom-range" type="range" value="0" min="0" max="4095" data-number="{{@key}}" ><br></td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                        <tfoot>
+                            <tr></tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+<script>
+    $(document).ready(function ($) {
+        console.log("init");
+        console.log($(".pca9685"));
+
+        let slidersLinked = false;
+
+        $(".linksliders").on("change", function () {
+            slidersLinked = this.checked;
+        })
+
+        $(".allinputs").on("change", function () {
+            let on = this.checked;
+            let targets = $(this).closest(".card").find(on ? "input[type=checkbox]:not(:checked)" : "input[type=checkbox]:checked");
+            targets.click();
+        });
+
+        $(document).on("click", "button[data-identify]", function() {
+            var range = $(this).closest("tr").find("input[type=range]");
+            console.log("Clicky!", range);
+            clearInterval(range[0].interval);
+            range[0].interval = setInterval(function() {
+                animateUp(range);
+            }, 1);
+            return false;   
+        });
+
+        function animateUp(what) {
+            console.log("Animate up: ", what.val());
+            if(parseInt(what.val()) < 4095) {
+                what.val(parseInt(what.val()) +50);
+                brightnessChange.call(what[0]);
+            } else {
+                clearInterval(what[0].interval);
+                what[0].interval = setInterval(function() {
+                    animateDown(what);
+                }, 1);
+            }
+        }
+
+        function animateDown(what) {  
+            if (parseInt(what.val()) > 1) {
+                what.val(parseInt(what.val()) - 50);
+                brightnessChange.call(what[0]);
+            } else {
+                clearInterval(what[0].interval);
+            }
+        }
+
+        window.allSliders = $("input[type=range]");
+
+        function brightnessChange(e) {
+            let brightness = $(this).val();
+            if (slidersLinked) {
+                allSliders.val(brightness);
+                $(".pca9685").map(function (idx, el) {
+                    let ports = [];
+                    let i2c = $(el).find(".i2caddress").val();
+                    $(el).find(".table-active input[type=range]")
+                        .map(function (idx, el) {
+                            ports.push($(el).data("number"));
+                        });
+                    socket.send(`ledtest|${i2c}|${ports.join(",")}|${brightness}`);
+                })
+
+            } else {
+                let parent = $(this).closest(".pca9685");
+                let i2c = $(parent).find(".i2caddress").val();
+                let port = $(this).data("number");
+                socket.send(`ledtest|${i2c}|${port}|${brightness}`);
+
+            }
+
+        }
+
+        $(".pca9685").on("input", "input[type=range]", $.debounce(10, brightnessChange));
+
+        $(".pca9685").on("change", "input[type=checkbox]", rowChecked)
+
+
+    });
+
+    function rowChecked(e) {
+        let active = $(e.target)[0].checked;
+        let row = $(e.target).closest("tr");
+        row.toggleClass("table-active", active);
+        let num = row.find("input[type=number]");
+        if (!active) {
+            num.val('');
+            num.removeClass("border-primary");
+            num.addClass("border-dark");
+            row.find("input:not([type=checkbox])").attr("disabled", "disabled");
+        } else {
+            num.val($('.table-active').length);
+            num.addClass("border-primary");
+            num.removeClass("border-dark");
+            row.find("input:not([type=checkbox])").removeAttr("disabled");
+        }
+        return false;
+    }
+
+    
+
+</script>
