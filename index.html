@@ -101,9 +101,8 @@
         import { LedstripAnimation } from './animationengine/LedstripAnimation.js';
 
 
-        const clearImmediate = cancelAnimationFrame;
-
-        class PCA9685 {
+       
+        class HTMLRangeInputDriver {
 
             constructor(options) {
                 this.options = options;
@@ -138,8 +137,8 @@
         
 
         var mapper = (new PinMapper())
-            .addDriver(A, new PCA9685({'name': 'A'}))
-            .addDriver(B, new PCA9685({'name': 'B'}))
+            .addDriver(A, new HTMLRangeInputDriver({'name': 'A'}))
+            .addDriver(B, new HTMLRangeInputDriver({'name': 'B'}))
             .setPinMapping(mapping);
 
 

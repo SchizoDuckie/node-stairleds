@@ -8,7 +8,11 @@ if (typeof(setImmediate) == 'undefined') {
     var setImmediate = function(func) {
         return requestAnimationFrame(func, 0);
     };
+
+    var clearImmediate = cancelAnimationFrame;
 }
+
+
 
 /**
  * LedstripAnimation 
