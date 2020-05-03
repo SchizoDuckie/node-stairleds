@@ -1,3 +1,7 @@
+import { TimeLine } from  '../animationengine/Timeline.js';
+import { TimelineAnimation } from  './TimelineAnimation.js';
+import { FadeTo } from './FadeTo.js';
+
 /**
  * Sequence Animation.
  * Fades led numbers passed in `options.leds[]` from their current brightness to `options.duration` one by one.
@@ -45,3 +49,5 @@ class Sequence extends TimelineAnimation {
         return output;
     } 
  }
+
+export { Sequence };

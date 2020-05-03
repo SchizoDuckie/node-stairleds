@@ -139,6 +139,6 @@ class PinMapper {
 
     }
 
-};
+}
 
-module.exports = PinMapper;
+export { PinMapper };

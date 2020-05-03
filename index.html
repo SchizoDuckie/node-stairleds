@@ -88,31 +88,20 @@
         <script src="public/js/jquery.min.js"></script>
         <script src="public/js/bootstrap.min.js"></script>
         <script src="public/js/bootstrap-slider.min.js"></script>
-        <script type="text/javascript">
-            window.module = {};
-        </script>
-        <script src="PinMapper.js"></script>
-        <script src="animationengine/Timeline.js"></script>
-        <script src="animationengine/TimelineAnimation.js"></script>
-        <script src="animationengine/LedstripAnimation.js"></script>
-        <script src="animations/FadeIn.js"></script>
-        <script src="animations/FadeOut.js"></script>
-        <script src="animations/FadeTo.js"></script>
-        <script src="animations/Immediate.js"></script>
-        <script src="animations/Sequence.js"></script>
-        <script src="animations/Shifting.js"></script>
-        
-        
-        <script src="testengine.js"></script>
-        <script type="text/javascript">
+    
+       
+        <script type="module">
         const A = 'A';
         const B = 'B';
 
-        setImmediate = function(func) {
-            return requestAnimationFrame(func, 0);
-        }
 
-        clearImmediate = cancelAnimationFrame;
+        import { FadeIn, FadeOut, FadeTo, Immediate, Shifting, Sequence } from './animations/index.js';
+        import { PinMapper } from './PinMapper.js';
+        import { TimeLine } from './animationengine/Timeline.js';
+        import { LedstripAnimation } from './animationengine/LedstripAnimation.js';
+
+
+        const clearImmediate = cancelAnimationFrame;
 
         class PCA9685 {
 

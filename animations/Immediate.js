@@ -1,3 +1,4 @@
+import { TimelineAnimation } from  './TimelineAnimation.js';
 /**
  * 'Immediate' Animation.
  * Sets led brightness to target brightness without fade
@@ -35,3 +36,5 @@ class Immediate extends TimelineAnimation {
        return output;
     }
 }
+
+export { Immediate };

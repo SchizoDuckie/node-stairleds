@@ -112,3 +112,5 @@ class TimelineAnimation {
         //throw new Error("Not implemented");
     }
 }
+
+export { TimelineAnimation };

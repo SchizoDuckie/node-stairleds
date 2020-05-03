@@ -1,3 +1,14 @@
+import { TimeLine } from './Timeline.js';
+
+if (typeof(setImmediate) == 'undefined') {
+    /**
+     * Browser fallback for setImmediate.
+     * @param {CallableFunction} func 
+     */
+    var setImmediate = function(func) {
+        return requestAnimationFrame(func, 0);
+    };
+}
 
 /**
  * LedstripAnimation 
@@ -79,3 +90,5 @@ class LedstripAnimation {
         clearImmediate(this.looper);
     }
 }
+
+export { LedstripAnimation };

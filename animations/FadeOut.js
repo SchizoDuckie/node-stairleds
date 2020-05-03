@@ -1,3 +1,5 @@
+import { TimelineAnimation } from  './TimelineAnimation.js';
+
 /**
  * A Fade Out Animation.
  * Fades led numbers passed in `options.leds[]` from `options.start` to `options.end`
@@ -47,3 +49,5 @@ class FadeOut extends TimelineAnimation {
         return output;
     } 
  }
+
+ export { FadeOut };

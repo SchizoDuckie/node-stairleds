@@ -1,3 +1,5 @@
+import { TimelineAnimation } from  './TimelineAnimation.js';
+
 /**
  * A Fade To Animation.
  * Fades led numbers passed in `options.leds[]` from their current brightness to `options.brightness`
@@ -49,3 +51,5 @@ class FadeTo extends TimelineAnimation {
         return output;
     } 
 }
+
+export { FadeTo };

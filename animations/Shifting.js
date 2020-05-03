@@ -1,3 +1,7 @@
+import { TimeLine } from  '../animationengine/Timeline.js';
+import { TimelineAnimation } from  './TimelineAnimation.js';
+import { FadeTo } from './FadeTo.js';
+
 /**
  * Shifting Animation.
  * Fades led numbers passed in `options.leds[]` from their current brightness to zero
@@ -99,3 +103,5 @@ class Shifting extends TimelineAnimation {
     } 
 
 }
+
+export { Shifting };
