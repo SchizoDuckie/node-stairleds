@@ -27,6 +27,8 @@
  * actual manipulation of the led brightness itself, that's the task of the `LedstripAnimation` class
  * 
  */
+const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 class TimelineAnimation {
 
     constructor(options) {
@@ -34,11 +36,27 @@ class TimelineAnimation {
         this.absoluteStart = 0;
         this.absoluteEnd = null;
         this.absoluteCurrent = null;
+        this.relativeStart = 0;
         this.duration = this.options.duration || this.calculateDuration();
         this.progress = 0;
         this.active = false;
         this.ended = false;
         this.started = false;
+        this.id = this.generateId();
+    }
+
+    generateId() {
+ 
+        var rtn = '';
+        for (var i = 0; i < 8; i++) {
+            rtn += ALPHABET.charAt(Math.floor(Math.random() * ALPHABET.length));
+        }
+        return rtn;
+    }
+
+    setRelativePosition(startTime) {
+        this.relativeStart = startTime;
+        return this;
     }
 
     /**

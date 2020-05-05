@@ -31,8 +31,18 @@ class TimeLine {
         if(!(startTime in this.queue)) {
             this.queue[startTime] = [];
         }
-        this.queue[startTime].push(instance);
+        this.queue[startTime].push(instance.setRelativePosition(startTime));
         return this;
+    }
+
+    getAllItems() {
+        var output = [];
+        for( var time in this.queue) {
+            for (var item in this.queue[time]) {
+                output.push(this.queue[time][item]);
+            }
+        }
+        return output;
     }
 
     /**
@@ -81,6 +91,7 @@ class TimeLine {
                  }
             }
         }
+        this.activeItems = output;
         return output;
     }
 }

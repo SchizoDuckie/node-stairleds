@@ -2,95 +2,58 @@
     <head>
         <link rel="stylesheet" href="public/css/bootstrap.min.css" />
         <link rel="stylesheet" href="public/css/bootstrap-slider.min.css" />
-        <style>
+        <link rel="stylesheet" href="public/css/testpage.css" />
 
-[type='range'] {
-  --range: calc(var(--max) - var(--min));
-  --ratio: calc((var(--val) - var(--min))/var(--range));
-  --sx: calc(.5*1.5em + var(--ratio)*(100% - 1.5em));
-  margin: 0;
-  padding: 0;
-  width: 12.5em;
-  height: 1.5em;
-  background: transparent;
-  font: 1em/1 arial, sans-serif;
-}
-[type='range'], [type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-}
-[type='range']::-webkit-slider-runnable-track {
-  box-sizing: border-box;
-  border: none;
-  width: 12.5em;
-  height: 1.25em;
-  background:transparent);
-}
-.js [type='range']::-webkit-slider-runnable-track {
-  background: linear-gradient(0.25turn, orange, red) 0/var(--sx) 100% no-repeat transparent;
-}
-[type='range']::-moz-range-track {
-  box-sizing: border-box;
-  border: none;
-  width: 12.5em;
-  height: 0.25em;
-  background: transparent;
-}
-[type='range']::-ms-track {
-  box-sizing: border-box;
-  border: none;
-  width: 12.5em;
-  height: 0.25em;
-  background: orange;
-}
-[type='range']::-moz-range-progress {
-  height: 0.25em;
-  background: orange;
-}
-[type='range']::-ms-fill-lower {
-  height: 0.25em;
-  background: orange;
-}
-[type='range']::-webkit-slider-thumb {
-  box-sizing: border-box;
-  border: none;
-  width: 1.2em;
-  height: 1.2em;
-  border-radius: 50%;
-  background: orange;
-}
-[type='range']::-moz-range-thumb {
-  box-sizing: border-box;
-  border: none;
-  width: 1.5em;
-  height: 1.5em;
-  border-radius: 50%;
-  background: orange;
-}
-[type='range']::-ms-thumb {
-  margin-top: 0;
-  box-sizing: border-box;
-  border: none;
-  width: 1.5em;
-  height: 1.5em;
-  border-radius: 50%;
-  background: #f90;
-}
-[type='range']::-ms-tooltip {
-  display: none;
-}
-[type=range] {
-    --min: 0;
-    --max: 4096;
-    --val: 0;
-}
-
-        </style>
         <script src="public/js/jquery.min.js"></script>
         <script src="public/js/bootstrap.min.js"></script>
         <script src="public/js/bootstrap-slider.min.js"></script>
-    
+        <script src="public/js/timeslider.js"></script>
        
-        <script type="module">
+       
+    </head>
+    <body>
+      
+      <div class="container">
+
+        <div class="row">
+          <div class="col col-md-4">
+            <h2> Timeline </h2>
+            <div id="timelineEditor">
+              <ul>
+
+              </ul>
+            </div>  
+          </div>
+
+          <div class="col col-md-8">  
+            <div class="leds" style="width:100%;">
+              <ol>
+                <li> A0  <input id="led_A_8"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A1  <input id="led_A_7"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A2  <input id="led_A_6"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A3  <input id="led_A_5"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A4  <input id="led_A_4"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A5  <input id="led_A_3"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A6  <input id="led_A_2"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A7  <input id="led_A_1"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> A8  <input id="led_A_0"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B7  <input id="led_B_7"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B8  <input id="led_B_8"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B9  <input id="led_B_9"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B10  <input id="led_B_10" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B11  <input id="led_B_11" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B12  <input id="led_B_12" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B13  <input id="led_B_13" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B14  <input id="led_B_14" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+                <li> B15  <input id="led_B_15" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
+              </ol>
+            </div>
+          </div> 
+          
+        </div>
+      </div>
+
+    <script type="module">
         const A = 'A';
         const B = 'B';
 
@@ -218,54 +181,92 @@
                 bouncing: true,
                 bounceAfter: 10
             }))
-            window.onload = function() { 
-                setTimeout(function() {
-                    anim.start();
-                }, 1000);
+
+          class TimelineEditor {
+              constructor(targetElement, animation) {
+                this.anim = animation;
+                this.targetElement = targetElement;
+                this.animElements = {};
+                this.items = [];
+                this.update();
+                this.render();
+                this.anim.addHook(this.onAnimationUpdate.bind(this));
+              }
+
+              onAnimationUpdate(newActiveItems) {
+                $(this.animElements).removeClass('active');
+                var activeIds = newActiveItems.map(el => 'anim_'+el.id);
+                for(var item in this.animElements) {
+                  if (activeIds.indexOf(item) > -1) {
+                    this.animElements[item].addClass('active');
+                  } else {
+                    this.animElements[item].removeClass('active');
+                  }
+                }
+              } 
+
+              update() {
+                var cells = [];
+                var animationItems = anim.timeline.queue;
+                for(var timeOffset in animationItems) {
+                  for(var i in animationItems[timeOffset]) {
+                    var currentAnim = animationItems[timeOffset][i];
+                    cells.push({
+                      'id': 'anim_'+currentAnim.id,
+                      'start': timeOffset,
+                      label: currentAnim.constructor.name,
+                      class: currentAnim.constructor.name,
+                    });
+                  }
+                }
+                this.items = cells;
+              }
+
+
+
+              render () {
+                var output = [];
+                for(var i =0; i< this.items.length; i++) {
+                  output.push($(`
+                    <li class="${this.items[i].class}" id="${this.items[i].id}">
+                      <div class="row">
+                        <div class="col col-md-3">
+                          <small class='start'>${this.items[i].start}ms</small>
+                        </div>
+                        <div class="col col-m-9">
+                            ${this.items[i].label}
+                        </div>
+                      </div>
+                    </li>`));
+                }
+                $(this.targetElement.html(output));
+                 $(this.targetElement).find("li").map(function(idx, el) {
+                   this.animElements[$(el).attr("id")] = $(el);
+                 }.bind(this))
+                $(this.targetElement).find("li:first-child").addClass('active');
+              }
             }
 
-        </script>
-    </head>
-    <body>
-        <style>
-            li {
-                text-align: right;
-            }
-        </style>
-
-        <div class="leds" style="width:100%; height: 100%;">
-            <ol>
-        <li> A0  <input id="led_A_8"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A1  <input id="led_A_7"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A2  <input id="led_A_6"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A3  <input id="led_A_5"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A4  <input id="led_A_4"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A5  <input id="led_A_3"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A6  <input id="led_A_2"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A7  <input id="led_A_1"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> A8  <input id="led_A_0"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B7  <input id="led_B_7"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B8  <input id="led_B_8"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B9  <input id="led_B_9"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B10  <input id="led_B_10" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B11  <input id="led_B_11" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B12  <input id="led_B_12" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B13  <input id="led_B_13" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B14  <input id="led_B_14" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-        <li> B15  <input id="led_B_15" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-            </ol>
-        </div>
+    
+         $(document).ready(function() {
+                  
+            anim.start();
+              
+            new TimelineEditor($("#timelineEditor ul"), anim);
 
 
-        <script>
-    const _R = document.querySelector('[type=range]');
+            const _R = document.querySelector('[type=range]');
 
-document.documentElement.classList.add('js');
+            document.documentElement.classList.add('js');
 
-_R.addEventListener('input', e => {
-	_R.style.setProperty('--val', +_R.value)
-}, false);
-        </script>
+            _R.addEventListener('input', e => {
+              _R.style.setProperty('--val', +_R.value)
+            }, false);
+
+
+      });
+
+      </script>
 
     </body>
 </html>

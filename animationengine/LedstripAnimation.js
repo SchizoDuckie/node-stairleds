@@ -31,6 +31,13 @@ class LedstripAnimation {
         this.looper = null;
         this.startTime = null;
         this.currentTime = null;
+        this.hooks = [];    
+    }
+
+    
+    addHook(callback) {
+        this.hooks.push(callback);
+        return this;
     }
 
     /**
@@ -56,11 +63,16 @@ class LedstripAnimation {
         this.currentTime = Date.now();
         this.timeline.setCurrentPosition(this.currentTime);
         var items = this.timeline.getActiveItems();
+
         for(var item in items) {
             var pins = items[item].render();
             for(var pin in pins) {
                 this.mapper.setBrightness(parseInt(pin), parseInt(pins[pin]));
             }
+        }
+        
+        for(var i=0; i< this.hooks.length; i++) {
+            this.hooks[i](items, this);
         }
 
         if(this.started) {

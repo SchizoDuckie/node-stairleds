@@ -1,0 +1,160 @@
+
+[type='range'] {
+  --range: calc(var(--max) - var(--min));
+  --ratio: calc((var(--val) - var(--min))/var(--range));
+  --sx: calc(.5*1.5em + var(--ratio)*(100% - 1.5em));
+  margin: 0;
+  padding: 0;
+  width: 12.5em;
+  height: 1.5em;
+  background: transparent;
+  font: 1em/1 arial, sans-serif;
+}
+[type='range'], [type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+[type='range']::-webkit-slider-runnable-track {
+  box-sizing: border-box;
+  border: none;
+  width: 12.5em;
+  height: 1.25em;
+  background:transparent);
+}
+.js [type='range']::-webkit-slider-runnable-track {
+  background: linear-gradient(0.25turn, orange, red) 0/var(--sx) 100% no-repeat transparent;
+}
+[type='range']::-moz-range-track {
+  box-sizing: border-box;
+  border: none;
+  width: 12.5em;
+  height: 0.25em;
+  background: transparent;
+}
+[type='range']::-ms-track {
+  box-sizing: border-box;
+  border: none;
+  width: 12.5em;
+  height: 0.25em;
+  background: orange;
+}
+[type='range']::-moz-range-progress {
+  height: 0.25em;
+  background: orange;
+}
+[type='range']::-ms-fill-lower {
+  height: 0.25em;
+  background: orange;
+}
+[type='range']::-webkit-slider-thumb {
+  box-sizing: border-box;
+  border: none;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  background: orange;
+}
+[type='range']::-moz-range-thumb {
+  box-sizing: border-box;
+  border: none;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: orange;
+}
+[type='range']::-ms-thumb {
+  margin-top: 0;
+  box-sizing: border-box;
+  border: none;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  background: #f90;
+}
+[type='range']::-ms-tooltip {
+  display: none;
+}
+[type=range] {
+    --min: 0;
+    --max: 4096;
+    --val: 0;
+}
+
+.leds li {
+    text-align: right;
+}
+
+#timelineEditor ul {
+    list-style-type: none;
+}
+
+#timelineEditor ul li {
+    position:relative;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 3px;
+    transition: all 0.2s ease-in;
+}
+
+#timelineEditor ul li::before {
+    content: "\2022";
+    font-weight: bold;
+    font-size: 30px;
+    display: inline-block;
+    width: 1em;
+    margin-left: 0;
+    position: absolute;
+    top: -3px;
+    left: -40px;
+    margin-top: 0;
+    transition: all 0.2s ease-in;
+}
+
+#timelineEditor ul li::after {
+    position: absolute;
+    top: 28px;
+    left: -33px;
+    border-left: 2px dashed #ccc;
+    content: "|";
+    color: transparent;
+    padding: 5px;
+}
+
+#timelineEditor ul li.active::before {
+  font-size: 40px;
+  top: -12px;
+  left: -42.5px;
+}
+
+#timelineEditor ul li.active {
+  font-weight: bold;
+  background-color: rgba(43, 104, 29, 0.42);
+}
+
+#timelineEditor ul li:last-child::after {
+    display:none;
+}
+
+.FadeTo::before {
+     color: lime ;
+}
+
+.FadeIn::before {
+  color: orange;
+}
+
+.FadeOut::before  {
+  color: red;
+}
+
+.Sequence::before  {
+  color: purple;
+}
+
+.Immediate::before  {
+  color: gray;
+}
+
+.Shifting::before  {
+  color: navy;
+}
