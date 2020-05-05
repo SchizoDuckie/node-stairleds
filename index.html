@@ -106,8 +106,6 @@
 
 
         var anim = (new LedstripAnimation(mapper))
-            .add(0,  new Sequence({ brightness: 3500, duration: 10000, leds: [ 4,6,7,10, 12, 15], mapper: mapper }))
-        
             // add a fadein animation that starts at 0ms, lasts 150ms and fades pins 1-6 from 0 to 200
             .add(0,     new FadeIn({ start: 0, end: 200, duration: 1500, leds: [0,1,2,3,4,5,6] })) // works
             .add(200,   new FadeIn({ start: 0, end: 800, duration: 1500, leds: [7,8,9,10,11,12]})) // works
