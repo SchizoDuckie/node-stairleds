@@ -5,9 +5,29 @@
         <link rel="stylesheet" href="public/css/testpage.css" />
 
         <script src="public/js/jquery.min.js"></script>
+        <script src="public/js/jquery.sortable.js"></script>
         <script src="public/js/bootstrap.min.js"></script>
         <script src="public/js/bootstrap-slider.min.js"></script>
-        <script src="public/js/timeslider.js"></script>
+      <style>
+        body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  position: absolute;
+  opacity: 0.5;
+  z-index: 2000;
+}
+
+.container li.placeholder {
+  position: relative;
+  /** More li styles **/
+}
+.container li.placeholder:before {
+  position: absolute;
+  /** Define arrowhead **/
+}
+      </style>
        
        
     </head>
@@ -48,10 +68,85 @@
                 <li> B15  <input id="led_B_15" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
               </ol>
             </div>
+
+              <div class="stairscontainer">
+                <ul class="stairs" id="stairs">
+                  <li class="step step-0">
+                      <div class='ledstrip'>
+                      </div>
+                  </li>
+                  <li class="step step-1">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-2">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-3">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-4">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-5">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-6">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-7">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-8">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-9">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-10">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-11">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-12">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-13">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-14">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-15">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-16">
+                      <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-17">
+                    <div class='ledstrip'></div>
+                  </li>
+                  <li class="step step-18">
+                    <div class='ledstrip'></div>
+                  </li>
+                </ul>
+              </div>
           </div> 
           
         </div>
+        <div class="row">
+          <div class="col col-md-12">
+         
+        </div>
       </div>
+      <ol class="simple_with_animation vertical">
+                <li>Item 1</li>
+                
+                <li>Item 3</li>
+                <li>Item 4</li>
+                <li>Item 5</li>
+                <li>Item 6</li>
+              </ol>
 
     <script type="module">
         const A = 'A';
@@ -74,6 +169,7 @@
             setPwm(pin, min, brightness) {
                 $("#led_"+this.options.name+"_"+pin).val(parseInt(brightness));
                 $("#led_"+this.options.name+"_"+pin)[0].style.setProperty('--val', brightness);
+                $(".step-"+(pin+1)+" .ledstrip")[0].style.opacity = (100 /4096) * brightness;
             }
         };  
 
@@ -106,7 +202,7 @@
 
 
         var anim = (new LedstripAnimation(mapper))
-            // add a fadein animation that starts at 0ms, lasts 150ms and fades pins 1-6 from 0 to 200
+              // add a fadein animation that starts at 0ms, lasts 150ms and fades pins 1-6 from 0 to 200
             .add(0,     new FadeIn({ start: 0, end: 200, duration: 1500, leds: [0,1,2,3,4,5,6] })) // works
             .add(200,   new FadeIn({ start: 0, end: 800, duration: 1500, leds: [7,8,9,10,11,12]})) // works
             // add a fadein animation that starts at 300ms, lasts 800ms  and fades pins 13-18 fade from 0 to 1850
@@ -242,6 +338,44 @@
                    this.animElements[$(el).attr("id")] = $(el);
                  }.bind(this))
                 $(this.targetElement).find("li:first-child").addClass('active');
+
+
+                var adjustment;
+
+              $(this.targetElement).sortable({
+                group: 'simple_with_animation',
+                vertical:true,
+                // animation on drop
+                onDrop: function  ($item, container, _super) {
+                  var $clonedItem = $('<li/>').css({height: 0});
+                  $item.before($clonedItem);
+                  $clonedItem.animate({'height': $item.height()});
+
+                  $item.animate($clonedItem.position(), function  () {
+                    $clonedItem.detach();
+                    _super($item, container);
+                  });
+                },
+
+                // set $item relative to cursor position
+                onDragStart: function ($item, container, _super) {
+                  var offset = $item.offset(),
+                      pointer = container.rootGroup.pointer;
+
+                  adjustment = {
+                    left: pointer.left - offset.left,
+                    top: pointer.top - offset.top
+                  };
+
+                  _super($item, container);
+                },
+                onDrag: function ($item, position) {
+                  $item.css({
+                    left: position.left - adjustment.left,
+                    top: position.top - adjustment.top
+                  });
+                }
+              });
               }
             }
 
