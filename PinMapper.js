@@ -53,6 +53,14 @@ class PinMapper {
       }
       return this.pinMapping[index];
     }
+
+    unmap(pin) {
+      for(var unmapped in this.pinMapping) {
+        if(this.pinMapping[unmapped].pin == pin) {
+          return unmapped;
+        }
+      }
+    }
   
     getBrightness(pin) {
       return this.brightnesses[pin] || 0;

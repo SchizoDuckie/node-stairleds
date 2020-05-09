@@ -1,3 +1,7 @@
+html, body {
+  background-color: #18191a;
+}
+
 
 [type='range'] {
   --range: calc(var(--max) - var(--min));
@@ -192,7 +196,7 @@
 }
 
 .step {
-  background-color: rgb(90, 61, 13);
+  background-color: rgb(137, 142, 156);
   float: left;
   height: 30vmin;
   transform-style: preserve-3d;
@@ -200,7 +204,7 @@
 }
 
 .step:before {
-  background-color: rgba(83, 40, 18, 0.5);
+  background-color: rgb(17, 36, 55);
   content: '';
   height: 30vmin;
   position: absolute;
@@ -317,17 +321,18 @@
 }
 
 
+
 .ledstrip {
-      top: 35%;
+    top: 65px;
     width: 80%;
     right: auto;
     position: absolute;
-    height: 100px;
-    background-color: #e7ca5ffc;
+    height: 200px;
+    background-color: rgb(255, 233, 171);
     z-index: -1000;
-    border: 1px solid #967f29;
+    border: 1px solid rgb(255, 233, 171);
     filter: blur(5px);
-    transform: rotateY(-90deg) translateZ(40px);
+    transform: rotateY(90deg) translateZ(-10px);
 }
 
 .step .ledstrip {

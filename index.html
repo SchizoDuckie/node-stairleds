@@ -46,28 +46,7 @@
           </div>
 
           <div class="col col-md-8">  
-            <div class="leds" style="width:100%;">
-              <ol>
-                <li> A0  <input id="led_A_8"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A1  <input id="led_A_7"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A2  <input id="led_A_6"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A3  <input id="led_A_5"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A4  <input id="led_A_4"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A5  <input id="led_A_3"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A6  <input id="led_A_2"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A7  <input id="led_A_1"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> A8  <input id="led_A_0"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B7  <input id="led_B_7"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B8  <input id="led_B_8"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B9  <input id="led_B_9"  type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B10  <input id="led_B_10" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B11  <input id="led_B_11" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B12  <input id="led_B_12" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B13  <input id="led_B_13" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B14  <input id="led_B_14" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-                <li> B15  <input id="led_B_15" type="range" min="0" max="4096" value="0" style="width:90%" /></li>
-              </ol>
-            </div>
+            
 
               <div class="stairscontainer">
                 <ul class="stairs" id="stairs">
@@ -167,9 +146,7 @@
             }
 
             setPwm(pin, min, brightness) {
-                $("#led_"+this.options.name+"_"+pin).val(parseInt(brightness));
-                $("#led_"+this.options.name+"_"+pin)[0].style.setProperty('--val', brightness);
-                $(".step-"+(pin+1)+" .ledstrip")[0].style.opacity = (100 /4096) * brightness;
+                $(".step-"+(mapper.unmap(pin))+" .ledstrip")[0].style.opacity = (1 /4096) * brightness;
             }
         };  
 
@@ -221,7 +198,7 @@
             .add(5600, new FadeTo({ brightness: 3500, duration: 1000, leds: [1,6,7,8], mapper: mapper }))
             .add(7700, new FadeTo({ brightness: 1000, duration: 2000, leds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], mapper: mapper, tag: 'test'}))
             .add(9000, new Sequence({
-                brightness: 3000,
+                brightness: 4000,
                 duration: 2000,
                 leds: [1,3,5,7,9,11,13,15,17],
                 mapper:mapper
@@ -234,14 +211,14 @@
             }))
             .add(13000, new FadeIn({
                 start: 0,
-                end: 2000,
+                end: 3000,
                 duration: 200,
                 leds: [0],
                 mapper:mapper
             }))
             .add(13000, new FadeIn({
                 start: 0,
-                end: 1000,
+                end: 4000,
                 duration: 200,
                 leds: [1],
                 mapper:mapper
@@ -385,15 +362,6 @@
             anim.start();
               
             new TimelineEditor($("#timelineEditor ul"), anim);
-
-
-            const _R = document.querySelector('[type=range]');
-
-            document.documentElement.classList.add('js');
-
-            _R.addEventListener('input', e => {
-              _R.style.setProperty('--val', +_R.value)
-            }, false);
 
 
       });
