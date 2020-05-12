@@ -118,15 +118,71 @@
          
         </div>
       </div>
-      <ol class="simple_with_animation vertical">
-                <li>Item 1</li>
-                
-                <li>Item 3</li>
-                <li>Item 4</li>
-                <li>Item 5</li>
-                <li>Item 6</li>
-              </ol>
 
+      <div class="timelineEditor">
+        <ul>
+         <li class="FadeIn">
+           <div class="row">
+            <div class="col col-md-3">
+              <div class="svg FadeIn" ></div>
+            </div>
+            <div class="col col-m-9">
+                Fade In
+            </div>
+          </div>
+        </li>
+        <li class="FadeOut">
+           <div class="row">
+            <div class="col col-md-3">
+              <div class="svg FadeOut" ></div>
+            </div>
+            <div class="col col-m-9">
+                Fade Out
+            </div>
+          </div>
+        </li>
+        <li class="FadeTo">
+           <div class="row">
+            <div class="col col-md-3">
+              <div class="svg FadeTo" ></div>
+            </div>
+            <div class="col col-m-9">
+                Fade To
+            </div>
+          </div>
+        </li>
+        <li class="Sequence">
+           <div class="row">
+            <div class="col col-md-3">
+              <div class="svg Sequence" ></div>
+            </div>
+            <div class="col col-m-9">
+                Sequence
+            </div>
+          </div>
+        </li>
+        <li class="Shifting">
+           <div class="row">
+            <div class="col col-md-3">
+              <div class="svg Shifting" ></div>
+            </div>
+            <div class="col col-m-9">
+                Shifting
+            </div>
+          </div>
+        </li>
+        <li class="Immediate">
+           <div class="row">
+            <div class="col col-md-3">
+              <div class="svg Immediate" ></div>
+            </div>
+            <div class="col col-m-9">
+                Immediate
+            </div>
+          </div>
+        </li>
+      </ul>
+</div>
     <script type="module">
         const A = 'A';
         const B = 'B';
@@ -304,7 +360,10 @@
                         <div class="col col-md-3">
                           <small class='start'>${this.items[i].start}ms</small>
                         </div>
-                        <div class="col col-m-9">
+                        <div class="col col-md-3">
+                          <div class="svg ${this.items[i].class}" ></div>
+                        </div>
+                        <div class="col col-m-6">
                             ${this.items[i].label}
                         </div>
                       </div>
