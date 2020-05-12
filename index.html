@@ -7,7 +7,7 @@
         <script src="public/js/jquery.min.js"></script>
         <script src="public/js/bootstrap.min.js"></script>
         <script src="public/js/bootstrap-slider.min.js"></script>
-        <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
+        <script src="public/js/Sortable.js"></script>
        
     </head>
     <body>
@@ -79,7 +79,17 @@
                   </div>
                 </li>
               </ul>
-        </div>
+            
+              <div class="card " style="background-color: transparent">
+                <div class="card-header" style="background-color: transparent">
+                  <h2 class="card-title" id="propertytitle">Properties</h4>
+                </div>
+                <div class="card-body" id="properties">
+                   click -&gt;
+                </div>
+              </div>
+                
+          </div>
           </div>
           <div class="col col-md-3">
             <h2> Timeline </h2>
@@ -327,7 +337,18 @@
                 this.items = cells;
               }
 
-
+              get(id) {
+                var animationItems = anim.timeline.queue;
+                for(var timeOffset in animationItems) {
+                  for(var i in animationItems[timeOffset]) {
+                    var currentAnim = animationItems[timeOffset][i];
+                    if(currentAnim.id == id || id == 'anim_'+currentAnim.id) {
+                      return currentAnim;
+                    }
+                  }
+                }
+                return null;
+              }
 
               render () {
                 var output = [];
@@ -354,10 +375,36 @@
                 $(this.targetElement).find("li:first-child").addClass('active');
 
 
+               $(this.targetElement).on("click", "li", function(evt) {
+                  console.log("Clicky on item: ", evt.currentTarget.id);
+                  var animEl = this.get(evt.currentTarget.id);
+                  $("#propertytitle").html(animEl.constructor.name)
+                  $("#properties").html(JSON.stringify(animEl.getOptions(), "", 2));
+
+               }.bind(this));
+
+
                 Sortable.create(this.targetElement[0], {
                   group: "sorting",
-                  sort: true
+                  sort: true,
+                    
                 });
+
+                 Sortable.create($("#toolbox ul")[0], {
+                  group: {
+                    name: "sorting",
+                    pull: "clone",
+                    put: false,
+                    revertClone: false,
+                  },
+                  onAdd: function (evt) {
+                    evt.clone.replaceWith(evt.item)
+                  },
+                  sort: false,
+                  // Element is removed from the list into another list
+                  
+                });
+
 
               }
             }

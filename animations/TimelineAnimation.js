@@ -45,6 +45,19 @@ class TimelineAnimation {
         this.id = this.generateId();
     }
 
+    /**
+     * filter some properties from options
+     */
+    getOptions() {
+        var output = {};
+        for(var i in this.options) {
+            if(i == 'mapper') continue;
+            output[i] = this.options[i];
+        }
+        output.startTime = this.relativeStart;
+        return output;
+    }
+
     generateId() {
  
         var rtn = '';

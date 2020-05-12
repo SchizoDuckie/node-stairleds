@@ -108,6 +108,10 @@ h2 {
     margin: 3px;
     transition: all 0.2s ease-in;
 }
+#timelineEditor ul li *, .timelineEditor ul li * {
+  pointer-events: none;
+}
+
 
 #timelineEditor ul li:hover, .timelineEditor ul li:hover {
    border: 1px solid rgb(214, 124, 21);
@@ -397,4 +401,10 @@ background-size: contain;
 
 .step .ledstrip {
   opacity: 0;
+}
+
+#properties {
+  white-space: pre;
+  width: 100%;
+  position: relative;
 }
