@@ -5,47 +5,92 @@
         <link rel="stylesheet" href="public/css/testpage.css" />
 
         <script src="public/js/jquery.min.js"></script>
-        <script src="public/js/jquery.sortable.js"></script>
         <script src="public/js/bootstrap.min.js"></script>
         <script src="public/js/bootstrap-slider.min.js"></script>
-      <style>
-        body.dragging, body.dragging * {
-  cursor: move !important;
-}
-
-.dragged {
-  position: absolute;
-  opacity: 0.5;
-  z-index: 2000;
-}
-
-.container li.placeholder {
-  position: relative;
-  /** More li styles **/
-}
-.container li.placeholder:before {
-  position: absolute;
-  /** Define arrowhead **/
-}
-      </style>
-       
+        <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
        
     </head>
     <body>
-      
+    
       <div class="container">
-
         <div class="row">
-          <div class="col col-md-4">
+          <div class="col col-md-3">
+            <h2>Toolbox</h2>
+             <div class="timelineEditor" id="toolbox">
+                <ul>
+                <li class="FadeIn">
+                  <div class="row">
+                    <div class="col col-md-3">
+                      <div class="svg FadeIn" ></div>
+                    </div>
+                    <div class="col col-m-9">
+                        Fade In
+                    </div>
+                  </div>
+                </li>
+                <li class="FadeOut">
+                  <div class="row">
+                    <div class="col col-md-3">
+                      <div class="svg FadeOut" ></div>
+                    </div>
+                    <div class="col col-m-9">
+                        Fade Out
+                    </div>
+                  </div>
+                </li>
+                <li class="FadeTo">
+                  <div class="row">
+                    <div class="col col-md-3">
+                      <div class="svg FadeTo" ></div>
+                    </div>
+                    <div class="col col-m-9">
+                        Fade To
+                    </div>
+                  </div>
+                </li>
+                <li class="Sequence">
+                  <div class="row">
+                    <div class="col col-md-3">
+                      <div class="svg Sequence" ></div>
+                    </div>
+                    <div class="col col-m-9">
+                        Sequence
+                    </div>
+                  </div>
+                </li>
+                <li class="Shifting">
+                  <div class="row">
+                    <div class="col col-md-3">
+                      <div class="svg Shifting" ></div>
+                    </div>
+                    <div class="col col-m-9">
+                        Shifting
+                    </div>
+                  </div>
+                </li>
+                <li class="Immediate">
+                  <div class="row">
+                    <div class="col col-md-3">
+                      <div class="svg Immediate" ></div>
+                    </div>
+                    <div class="col col-m-9">
+                        Immediate
+                    </div>
+                  </div>
+                </li>
+              </ul>
+        </div>
+          </div>
+          <div class="col col-md-3">
             <h2> Timeline </h2>
             <div id="timelineEditor">
               <ul>
-
+                <!-- dynamically filled -->
               </ul>
             </div>  
           </div>
 
-          <div class="col col-md-8">  
+          <div class="col col-md-6">  
             
 
               <div class="stairscontainer">
@@ -113,76 +158,9 @@
           </div> 
           
         </div>
-        <div class="row">
-          <div class="col col-md-12">
-         
-        </div>
       </div>
 
-      <div class="timelineEditor">
-        <ul>
-         <li class="FadeIn">
-           <div class="row">
-            <div class="col col-md-3">
-              <div class="svg FadeIn" ></div>
-            </div>
-            <div class="col col-m-9">
-                Fade In
-            </div>
-          </div>
-        </li>
-        <li class="FadeOut">
-           <div class="row">
-            <div class="col col-md-3">
-              <div class="svg FadeOut" ></div>
-            </div>
-            <div class="col col-m-9">
-                Fade Out
-            </div>
-          </div>
-        </li>
-        <li class="FadeTo">
-           <div class="row">
-            <div class="col col-md-3">
-              <div class="svg FadeTo" ></div>
-            </div>
-            <div class="col col-m-9">
-                Fade To
-            </div>
-          </div>
-        </li>
-        <li class="Sequence">
-           <div class="row">
-            <div class="col col-md-3">
-              <div class="svg Sequence" ></div>
-            </div>
-            <div class="col col-m-9">
-                Sequence
-            </div>
-          </div>
-        </li>
-        <li class="Shifting">
-           <div class="row">
-            <div class="col col-md-3">
-              <div class="svg Shifting" ></div>
-            </div>
-            <div class="col col-m-9">
-                Shifting
-            </div>
-          </div>
-        </li>
-        <li class="Immediate">
-           <div class="row">
-            <div class="col col-md-3">
-              <div class="svg Immediate" ></div>
-            </div>
-            <div class="col col-m-9">
-                Immediate
-            </div>
-          </div>
-        </li>
-      </ul>
-</div>
+     
     <script type="module">
         const A = 'A';
         const B = 'B';
@@ -376,42 +354,11 @@
                 $(this.targetElement).find("li:first-child").addClass('active');
 
 
-                var adjustment;
+                Sortable.create(this.targetElement[0], {
+                  group: "sorting",
+                  sort: true
+                });
 
-              $(this.targetElement).sortable({
-                group: 'simple_with_animation',
-                vertical:true,
-                // animation on drop
-                onDrop: function  ($item, container, _super) {
-                  var $clonedItem = $('<li/>').css({height: 0});
-                  $item.before($clonedItem);
-                  $clonedItem.animate({'height': $item.height()});
-
-                  $item.animate($clonedItem.position(), function  () {
-                    $clonedItem.detach();
-                    _super($item, container);
-                  });
-                },
-
-                // set $item relative to cursor position
-                onDragStart: function ($item, container, _super) {
-                  var offset = $item.offset(),
-                      pointer = container.rootGroup.pointer;
-
-                  adjustment = {
-                    left: pointer.left - offset.left,
-                    top: pointer.top - offset.top
-                  };
-
-                  _super($item, container);
-                },
-                onDrag: function ($item, position) {
-                  $item.css({
-                    left: position.left - adjustment.left,
-                    top: position.top - adjustment.top
-                  });
-                }
-              });
               }
             }
 
