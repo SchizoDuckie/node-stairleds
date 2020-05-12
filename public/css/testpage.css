@@ -107,7 +107,10 @@ h2 {
     border-radius: 5px;
     margin: 3px;
     transition: all 0.2s ease-in;
+    -webkit-user-select: none;
+    
 }
+
 #timelineEditor ul li *, .timelineEditor ul li * {
   pointer-events: none;
 }
