@@ -1,0 +1,22 @@
+Starting Extremely Overengineered Stairleds Server
+Config loaded, defaults from ./config/defaults.json are overridden by ./config/user.json
+Initializing PCA9685 Pin Mapper
+Pin Mapper initialized, Testing 18 leds:
+On: 
+++++++++++++++++++
+Off:
+------------------
+Pin Mapper tested and ready
+Including webserver handlers in /home/pi/stairleds/node/routes
+----------------------
+Webserver started at port 80
+Starting websocket server on 8000
+WebSocketserver started
+(node:1125) Warning: N-API is an experimental feature and could change at any time.
+AnimationEngine intialized!
+Effects webserver routes added
+Effects Websocket listener attached
+MQTT Client initialized.
+MQTT Webserver route added
+MQTT Websocket listener attached.
+PCA9685 webserver routes added

@@ -35,5 +35,10 @@
     },
     "animations": {
 
+    },
+    "mqtt": {
+        "enabled": true,
+        "hostname": "localhost",
+        "channel": "sensor"
     }
 }
