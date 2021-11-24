@@ -23,6 +23,16 @@ class Sensors {
             res.render('sensors');
         });
 
+        app.webserver.post("/sensors", function (req, res) {
+            res.redirect('/sensors');
+            console.log("Incoming POSTdata: ", req.body);
+            var posted = req.body;
+
+            console.log("New sensor config: ", posted);
+
+            app.config.save();
+        });
+
 
         /**
          * stream statistics

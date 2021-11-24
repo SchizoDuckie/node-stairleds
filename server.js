@@ -74,35 +74,22 @@ class StairledApp
     initAnimations(pinMapper) {
         return {
             "LightEmUp!": (new LedstripAnimation(pinMapper))
-                .add(0, new FadeIn({
-                    start: 0,
-                    end: 2000,
-                    duration: 1000,
-                    leds: [1],
+
+                .add(0, new Sequence({
+                    brightness: 4000,
+                    duration: 5000,
+                    leds: [0,1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,17],
+                    mapper: pinMapper
+                })),
+            "LightEmDown!": (new LedstripAnimation(pinMapper))
+
+                .add(0, new Sequence({
+                    brightness: 4000,
+                    duration: 5000,
+                    leds: [17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0],
                     mapper: pinMapper
                 }))
-
-                .add(2000, new Shifting({
-                    duration: 2000,
-                    leds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,17],
-                    shifts: 34,
-                    mapper: pinMapper,
-                    direction: 'down'
-                }))
-                .add(4000, new Shifting({
-                    duration: 4000,
-                    leds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,17],
-                    shifts: 34,
-                    mapper: pinMapper,
-                    direction: 'up'
-                }))
-                .add(9000, new FadeTo({
-                    brightness: 0,
-                    duration: 2000,
-                    leds: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-                    mapper: pinMapper,
-                }))
-        };
+        }
     }
 
     initSensors() {
@@ -231,5 +218,3 @@ class StairledApp
 
 const app = new StairledApp();
 app.start();
-
-

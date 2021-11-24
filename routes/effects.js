@@ -104,7 +104,7 @@ class Effects {
             return posted[paramname];
         }
 
-        this.animation = this.createDemoAnimation(app.pinMapper);
+        //this.animation = this.createDemoAnimation(app.pinMapper);
 
         app.webserver.get('/effects', (req, res) => {
             res.render('effects', { anim: this.animation });

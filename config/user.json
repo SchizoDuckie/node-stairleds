@@ -6,72 +6,72 @@
   },
   "pinmapper": {
     "1": {
-      "driver": "A",
-      "pin": 8
+      "driver": "B",
+      "pin": 14
     },
     "2": {
-      "driver": "A",
-      "pin": 7
+      "driver": "B",
+      "pin": 13
     },
     "3": {
-      "driver": "A",
-      "pin": 6
+      "driver": "B",
+      "pin": 12
     },
     "4": {
-      "driver": "A",
-      "pin": 5
+      "driver": "B",
+      "pin": 11
     },
     "5": {
-      "driver": "A",
-      "pin": 4
+      "driver": "B",
+      "pin": 10
     },
     "6": {
-      "driver": "A",
-      "pin": 3
+      "driver": "B",
+      "pin": 9
     },
     "7": {
-      "driver": "A",
-      "pin": 2
+      "driver": "B",
+      "pin": 8
     },
     "8": {
-      "driver": "A",
-      "pin": 1
+      "driver": "B",
+      "pin": 7
     },
     "9": {
       "driver": "A",
       "pin": 0
     },
     "10": {
-      "driver": "B",
-      "pin": 8
+      "driver": "A",
+      "pin": 1
     },
     "11": {
-      "driver": "B",
-      "pin": 9
+      "driver": "A",
+      "pin": 2
     },
     "12": {
-      "driver": "B",
-      "pin": 10
+      "driver": "A",
+      "pin": 3
     },
     "13": {
-      "driver": "B",
-      "pin": 11
+      "driver": "A",
+      "pin": 4
     },
     "14": {
-      "driver": "B",
-      "pin": 12
+      "driver": "A",
+      "pin": 5
     },
     "15": {
-      "driver": "B",
-      "pin": 13
+      "driver": "A",
+      "pin": 6
     },
     "16": {
-      "driver": "B",
-      "pin": 14
+      "driver": "A",
+      "pin": 7
     },
     "17": {
-      "driver": "B",
-      "pin": 15
+      "driver": "A",
+      "pin": 8
     }
   },
   "mqtt": {

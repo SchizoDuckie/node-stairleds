@@ -32,7 +32,7 @@ class TimeLine {
             this.queue[startTime] = [];
         }
         this.queue[startTime].push(instance.setRelativePosition(startTime));
-        if(this.duration < startTime + instance.duration) {
+        if(this.duration <= startTime + instance.duration) {
             this.duration = startTime + instance.duration;
         }
         return this;
@@ -71,7 +71,7 @@ class TimeLine {
     /**
      * Update the current time to determine current position on the timeline.
      * Walks all items on the timeline and sets their `active` flag to true when
-     * they their duration is between start and end.
+     * their duration is between start and end.
      * @param {Number} time current timestamp in loop
      * @return {TimeLine} fluent interface supported
      */

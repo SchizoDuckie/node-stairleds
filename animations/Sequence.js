@@ -17,15 +17,30 @@ class Sequence extends TimelineAnimation {
      * @param {Object} options 
      */
     constructor(options) {
+        if(!("brightness" in options)) {
+            throw new Error("Required option 'brightness' is missing for Sequence " + JSON.stringify(options));
+        }
         super(options);
+
         this.timeline = new TimeLine();
-        this.fadeTo = new FadeTo({
-            brightness: this.options.brightness,
-            duration: this.options.duration / this.options.leds.length,
-            mapper: this.options.mapper,
-        });
-        for(let i = 0; i<this.options.leds.length; i++) {
-            this.timeline.add(Math.round(i * (this.options.duration / this.options.leds.length)), this.fadeTo.clone().setLeds([i]));
+        /**
+         * How long each step of the timeline should last based on the amount of leds passed
+         * @type {number}
+         */
+        let stepDuration = Math.floor(this.options.duration / this.options.leds.length);
+
+        /**
+         * Create a clone of the fade for every led in the passed options and add that to the timeline after
+         * the previous one.
+         */
+        for(var index=0; index< this.options.leds.length; index++) {
+            let clonedFade = new FadeTo({
+                brightness: this.options.brightness,
+                duration: stepDuration,
+                mapper: this.options.mapper,
+                leds: [this.options.leds[index]]
+            });
+            this.timeline.add(index * stepDuration, clonedFade);
         }
     }
 
@@ -43,7 +58,12 @@ class Sequence extends TimelineAnimation {
                 output[pin] = parseInt(pins[pin]);
             }
         }
+
         return output;
+    }
+
+    toString() {
+        console.log(this.constructor.name, this.options, this.timeline);
     }
  }
 

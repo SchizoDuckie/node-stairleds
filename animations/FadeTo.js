@@ -23,15 +23,14 @@ class FadeTo extends TimelineAnimation {
         if(!this.options.mapper) {
             throw new Error("mandatory option mapper is missing!");
         }
+        this.leds = options.leds;
         this.brightnesses = {};
     }
 
     onStart() {
-        
         for(var i= 0; i< this.options.leds.length; i++) {
             this.brightnesses[this.options.leds[i]] = this.options.mapper.getBrightness(this.options.leds[i]);
         }
-        
     }
 
     render() {

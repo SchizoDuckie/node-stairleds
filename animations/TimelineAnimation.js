@@ -57,7 +57,7 @@ class TimelineAnimation {
     }
 
     setLeds(leds) {
-        this.options.leds = leds;
+        this.options.leds = this.leds = leds;
         return this;
     }
 
@@ -78,11 +78,11 @@ class TimelineAnimation {
     /**
      * Sets the absolute start time and calculate duration based off of that.
      * Automatically calls calculateDuration if no `options.duration` was passed
-     * @param {Date} startTime 
+     * @param {integer} secondsSinceEpoch
      */
-    setAbsolutePosition(startTime) {
-        this.absoluteStart = startTime;
-        this.absoluteEnd = startTime + (this.duration || this.calculateDuration());
+    setAbsolutePosition(secondsSinceEpoch) {
+        this.absoluteStart = secondsSinceEpoch;
+        this.absoluteEnd = secondsSinceEpoch + (this.duration || this.calculateDuration());
         return this;
     }
 
@@ -118,15 +118,12 @@ class TimelineAnimation {
             }
             this.active = true;
             this.absoluteCurrent = currentTime;
-            this.progress = Math.min(Math.round((100 / this.duration) * (currentTime - this.absoluteStart) , 3), 100);
-            if(this.progress >= 100) {
-                this.ended = true;
-            }
+            this.progress = Math.min(Math.round((100 / this.duration) * (currentTime - this.absoluteStart)), 100);
         } else {
             this.active = false;
             this.absoluteCurrent = null;
         }
-        if(currentTime > this.absoluteEnd) {
+        if(currentTime >= this.absoluteEnd) {
             this.progress = 100;
         } else if (currentTime < this.absoluteStart) {
             this.progress = 0;
@@ -148,6 +145,10 @@ class TimelineAnimation {
 
     clone() {
         return Object.assign(Object.create(Object.getPrototypeOf(this)),this);
+    }
+
+    toString() {
+        return this.className() + ":"+  JSON.stringify(this.options);
     }
 }
 
