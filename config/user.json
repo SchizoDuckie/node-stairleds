@@ -73,5 +73,10 @@
       "driver": "B",
       "pin": 15
     }
+  },
+  "mqtt": {
+    "enabled": true,
+    "hostname": "localhost",
+    "channel": "sensor"
   }
 }

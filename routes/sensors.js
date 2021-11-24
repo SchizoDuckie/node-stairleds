@@ -1,4 +1,4 @@
-import server from "../WebServer.mjs";
+import server from "../WebServer.js";
 
 /**
  * PCA9685 Handling and routes.
@@ -46,4 +46,4 @@ class Sensors {
     }
 }
 
-module.exports = new Sensors();
+export default  new Sensors();
