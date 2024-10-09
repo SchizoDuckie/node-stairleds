@@ -43,7 +43,7 @@ class FadeOut extends TimelineAnimation {
                     throw new Error("Cannot determine range for fade out! No start and no mapper provided");
                 }
             }
-            output[this.options.leds[i]] = (range / 100) * (100 - this.progress);
+            output[this.options.leds[i]] = Math.round((range / 100) * (100 - this.progress));
         }
        // console.log(this.constructor.name, this.options.leds, this.progress, output);
         return output;

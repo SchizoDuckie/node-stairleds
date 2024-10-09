@@ -125,6 +125,7 @@ class TimelineAnimation {
         }
         if(currentTime >= this.absoluteEnd) {
             this.progress = 100;
+            this.ended = true;
         } else if (currentTime < this.absoluteStart) {
             this.progress = 0;
         }

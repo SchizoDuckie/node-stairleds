@@ -42,7 +42,7 @@ class FadeTo extends TimelineAnimation {
                 range = (start > end) ? start - end : end - start;
 
             if (end > start) {
-                output[led] = Math.round(start + ((range / 100) * this.progress));
+                output[led] = start + ((range / 100) * this.progress);
             } else {
                 output[led] = start - ((range / 100) * this.progress);
             }

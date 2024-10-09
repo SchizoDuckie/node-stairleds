@@ -46,7 +46,7 @@ class PinMapper {
    */
     getDriverByAddress(address) {
       for (let i in this.drivers) {
-        if(this.drivers[i].address === address) {
+        if(this.drivers[i].address === parseInt(address)) {
           return this.drivers[i];
         }
       }
@@ -128,9 +128,7 @@ class PinMapper {
    * @returns {PinMapper}
    */
     setAllBrightness(brightness) {
-      for(var i=0; i< Object.keys(this.pinMapping).length; i++) {
-        this.setBrightness(i, brightness);
-      }
+      Object.keys(this.pinMapping).map(i => this.setBrightness(i, brightness));
       return this;
     }
 
@@ -172,18 +170,20 @@ class PinMapper {
    */
   test() {
 
-      console.log(`Pin Mapper initialized, Testing ${Object.keys(this.pinMapping).length} leds:\nOn: `);
-      for(let i=0; i< Object.keys(this.pinMapping).length; i++) {
+    let pins = Object.keys(this.pinMapping);
+    console.log("Pins: ", pins);
+    console.log(`Pin Mapper initialized, Testing ${pins.length} leds:\nOn: `);
+      pins.map((index, pin) => {
         process.stdout.write("+");
-        this.setBrightness(i, 1000);
+        this.setBrightness(index, 1000);
         sleeper.msleep(50);
-      }
+      })
       console.log('\nOff:')
-      for(let i=0; i< Object.keys(this.pinMapping).length; i++) {
+      pins.map((index, pin) => {
         process.stdout.write("-");
-        this.setBrightness(i, 0);
+        this.setBrightness(index, 0);
         sleeper.msleep(50);
-      }
+      })
       console.log("\nPin Mapper tested and ready");
 
       return this;

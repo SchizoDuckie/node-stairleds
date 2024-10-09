@@ -15,6 +15,7 @@ class Sensor {
         this.lastTriggered = null;
         this.initMqttSubscription(mqttClient);
         this.anim = animations[this.triggerEffect];
+        this.animations = animations;
     }
 
     initMqttSubscription(mqttClient) {
@@ -24,7 +25,7 @@ class Sensor {
                 sensorName = messageParts[0],
                 value = parseInt(messageParts[1]),
                 state = parseInt(messageParts[2]);
-
+//	    console.log("Sensor: ", sensorName, "my name: ", this.name, value);
             if (sensorName === this.name) {
                 this.processTrigger(value);
             }
@@ -32,7 +33,9 @@ class Sensor {
     }
 
     processTrigger(value) {
+//console.debug("Process trigger? ", value, this.triggerType, this.triggerTreshold);
         if(value > this.upperTreshold) return;
+
         switch (this.triggerType) {
             case "<=":
                 if (value <= this.triggerTreshold) {
@@ -61,7 +64,16 @@ class Sensor {
             console.log(`[${this.lastTriggered.toLocaleString()}] Sensor '${this.name}' just triggered! Measured ${value} ${this.triggerType} configured treshold ${this.triggerTreshold}. Starting LedstripAnimation '${this.triggerEffect}'`);
             setTimeout(() => { this.active=false }, 2000);
             if(this.anim) {
-                this.anim.start();
+                let skip=false;
+                Object.keys(this.animations).map(anim => {
+                    if(this.animations[anim].started) {
+                        console.log(`Animation ${anim} is still active, not starting a new one`);
+                        skip=true;
+                    }
+                })
+                if(!skip) {
+                    this.anim.start();
+                }
             } else {
                 console.log(`Not starting anim ${this.triggerEffect} because it wasn't found.`);
             }

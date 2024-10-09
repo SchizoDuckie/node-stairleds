@@ -332,7 +332,7 @@
                 let messages = JSON.parse(result.data)
                 if(!Array.isArray(messages)) { return; }
                 messages.map((message) => {
-                    myChart = (message.sensor === "Sensor Upstairs") ? chart1 : chart2;
+                    myChart = (message.sensor.indexOf("Upstairs") > -1) ? chart1 : chart2;
                     myChart.data.labels.push(new Date(message.timestamp).toISOString().substr(11, 8));
                     myChart.data.datasets[0].data.push(message.value);
                     myChart.data.datasets[1].data.push(200);

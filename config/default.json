@@ -14,77 +14,73 @@
     }
   },
   "pinmapper": {
-    "0": {
-      "driver": "B",
-      "pin": 15
-    },
     "1": {
-      "driver": "B",
-      "pin": 14
-    },
-    "2": {
-      "driver": "B",
-      "pin": 13
-    },
-    "3": {
-      "driver": "B",
-      "pin": 12
-    },
-    "4": {
-      "driver": "B",
-      "pin": 11
-    },
-    "5": {
-      "driver": "B",
-      "pin": 10
-    },
-    "6": {
-      "driver": "B",
-      "pin": 9
-    },
-    "7": {
-      "driver": "B",
-      "pin": 8
-    },
-    "8": {
-      "driver": "B",
-      "pin": 7
-    },
-    "9": {
       "driver": "A",
       "pin": 0
     },
-    "10": {
+    "2": {
       "driver": "A",
       "pin": 1
     },
-    "11": {
+    "3": {
       "driver": "A",
       "pin": 2
     },
-    "12": {
+    "4": {
       "driver": "A",
       "pin": 3
     },
-    "13": {
+    "5": {
       "driver": "A",
       "pin": 4
     },
-    "14": {
+    "6": {
       "driver": "A",
       "pin": 5
     },
-    "15": {
+    "7": {
       "driver": "A",
       "pin": 6
     },
-    "16": {
+    "8": {
       "driver": "A",
       "pin": 7
     },
-    "17": {
-      "driver": "A",
+    "9": {
+      "driver": "B",
+      "pin": 14
+    },
+    "10": {
+      "driver": "B",
+      "pin": 15
+    },
+    "11": {
+      "driver": "B",
+      "pin": 11
+    },
+    "12": {
+      "driver": "B",
+      "pin": 13
+    },
+    "13": {
+      "driver": "B",
+      "pin": 12
+    },
+    "14": {
+      "driver": "B",
+      "pin": 10
+    },
+    "15": {
+      "driver": "B",
+      "pin": 9
+    },
+    "16": {
+      "driver": "B",
       "pin": 8
+    },
+    "17": {
+      "driver": "B",
+      "pin": 7
     }
   },
   "animations": {
@@ -98,10 +94,10 @@
   "sensors": [
     {
       "enabled": true,
-      "name": "Sensor Upstairs",
+      "name": "Upstairs",
       "type": "MQTT",
       "channel": "sensor",
-      "triggerTreshold": "50",
+      "triggerTreshold": "800",
       "upperTreshold": "1000",
       "triggerType": "<=",
       "triggerEffect": "LightEmUp!"
@@ -111,9 +107,9 @@
       "name": "Sensor Downstairs",
       "type": "MQTT",
       "channel": "sensor",
-      "triggerTreshold": "50",
+      "triggerTreshold": "600",
       "upperTreshold": "1000",
-      "triggerType": "<=",
+    "triggerType": "<=",
       "triggerEffect": "LightEmDown!"
     }
   ]

@@ -56,6 +56,15 @@ class Pca9685 {
             app.config.set('pinmapper', mappings);
             app.config.save();
         });
+
+        app.webSocketServer.addHandler('setPWM', (address, ports, value) => {
+            let driver = app.pinMapper.getDriverByAddress(address);
+            ports
+                .split(',')
+                .map( (port) => driver.setPwm(port, 0, value));
+        });
+
+
         console.log("PCA9685 webserver routes added");
     }
 }
