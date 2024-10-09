@@ -1,4 +1,4 @@
-import server from "../WebServer.mjs";
+import server from "../WebServer.js";
 
 /**
  * PCA9685 Handling and routes.
@@ -21,6 +21,16 @@ class Sensors {
 
         app.webserver.get('/sensors', function (req, res) {
             res.render('sensors');
+        });
+
+        app.webserver.post("/sensors", function (req, res) {
+            res.redirect('/sensors');
+            console.log("Incoming POSTdata: ", req.body);
+            var posted = req.body;
+
+            console.log("New sensor config: ", posted);
+
+            app.config.save();
         });
 
 
@@ -46,4 +56,4 @@ class Sensors {
     }
 }
 
-module.exports = new Sensors();
+export default  new Sensors();

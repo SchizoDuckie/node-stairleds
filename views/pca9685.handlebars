@@ -182,14 +182,14 @@
                         .map(function (idx, el) {
                             ports.push($(el).data("number"));
                         });
-                    socket.send(`ledtest|${i2c}|${ports.join(",")}|${brightness}`);
+                    socket.send(`setPWM|${i2c}|${ports.join(",")}|${brightness}`);
                 })
 
             } else {
                 let parent = $(this).closest(".pca9685");
                 let i2c = $(parent).find(".i2caddress").val();
                 let port = $(this).data("number");
-                socket.send(`ledtest|${i2c}|${port}|${brightness}`);
+                socket.send(`setPWM|${i2c}|${port}|${brightness}`);
 
             }
 

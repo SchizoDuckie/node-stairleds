@@ -1,8 +1,11 @@
 
 <h3 class="text-dark mb-4"><i class="fas fa-wifi" style="transform: rotateZ(90deg);"></i>&nbsp
     Sensor Settings</h3>
+<form method="post" action="/sensors">
 <div class="row">
+
     <div class="col-md-6">
+            <!--- Sensor 1 config -->
         <div class="card shadow" style="margin-bottom:10px">
             <div class="card-header py-3">
                 <div class="row">
@@ -16,7 +19,7 @@
                 <div class="row">
                     <div class="col"><label class="col-form-label">Sensor Name:&nbsp;</label></div>
                     <div class="col"><input class="form-control d-xl-flex justify-content-xl-center align-items-xl-center"
-                                            type="text" name="sensor1[name]" value="Downstairs"></div>
+                                            type="text" name="sensor1[name]" value="Sensor Upstairs"></div>
                 </div>
                 <div class="row">
                     <div class="col"><label class="col-form-label">Sensor Type:&nbsp;</label></div>
@@ -44,7 +47,7 @@
                     </div>
                      <div class="col col-md-2">
                         <input class="form-control"
-                            type="text" name="sensor1[triggerWhenValue]" value="800">
+                            type="text" name="sensor1[triggerWhenValue]" value="200">
                     </div>
                 </div>
                 <div class="row">
@@ -78,34 +81,20 @@
             </div>
             <div class="card-footer"></div>
         </div>
-
-        <div class="card shadow top">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-primary">Sensor 1 Live input chart</h3>
-                        <p class="text-primary m-0 font-weight-bold"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <canvas id="inputchart1"></canvas>
-            </div>
-            <div class="card-footer"></div>
-        </div>
-
+            <!--- Sensor 1 graph -->
         <div class="card shadow top card-">
             <div class="card-header py-3">
                 <div class="row">
                     <div class="col">
                         <h3 class="text-primary"><i class="fas fa-wifi"
-                                                    style="transform: rotateZ(90deg);"></i>&nbsp;Sensor #1 Live input chart:</h3>
+                                                    style="transform: rotateZ(90deg);"></i>&nbsp;Sensor 1 Live input chart:</h3>
                         <p class="text-primary m-0 font-weight-bold"></p>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row">
+                    <canvas id="inputchart1"></canvas>
                     <div class="col"><label class="col-form-label">Trigger log:&nbsp;</label></div>
                     <div class="col">
                         <table class="table-responsive">
@@ -137,220 +126,230 @@
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card shadow">
+
+        <!--- Sensor 2 config -->
+        <div class="card shadow" style="margin-bottom:10px">
             <div class="card-header py-3">
                 <div class="row">
                     <div class="col">
-                        <h3 class="text-primary"><i class="fas fa-wifi"
-                                style="transform: rotateZ(90deg);"></i>&nbsp; Sensor #2</h3>
+                        <h3 class="text-primary">Sensor 2 Configuration</h3>
                         <p class="text-primary m-0 font-weight-bold"></p>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col"><label class="col-form-label">MQTT Channel:&nbsp;</label></div>
+                    <div class="col"><label class="col-form-label">Sensor Name:&nbsp;</label></div>
                     <div class="col"><input class="form-control d-xl-flex justify-content-xl-center align-items-xl-center"
-                            type="text" name="PIR2PORT" value="GPIO21"></div>
+                                            type="text" name="sensor2[name]" value="Sensor Downstairs"></div>
                 </div>
-                
                 <div class="row">
-                    <div class="col"><label class="col-form-label">When triggered play:&nbsp;</label></div>
+                    <div class="col"><label class="col-form-label">Sensor Type:&nbsp;</label></div>
                     <div class="col">
-                        <select name="ledeffect2" class="form-control">
-                            <option>Select a led effect</option>
+                        <select class="form-control" name="sensor2[type]">
+                            <option>MQTT</option>
                         </select>
                     </div>
                 </div>
+
                 <div class="row">
-                    <div class="col"><label class="col-form-label">Input chart:&nbsp;</label></div>
-                    <div class="col">
-                        <canvas id="inputchart2"></canvas>
+                    <div class="col"><label class="col-form-label">MQTT Channel:&nbsp;</label></div>
+                    <div class="col"><input class="form-control d-xl-flex justify-content-xl-center align-items-xl-center"
+                                            type="text" name="sensor2[channel]" value="sensor"></div>
+                </div>
+                <div class="row">
+                    <div class="col col-md-6"><label class="col-form-label">Trigger when value:&nbsp;</label></div>
+
+                    <div class="col col-md-4">
+                        <select  class="form-control"  name="sensor2[triggerWhenMethod]">
+                            <option value="<=">Value below ( <= )</option>
+                            <option value="<=">Value above ( >= )</option>
+                            <option value="<=">Value equals ( == )</option>
+                        </select>
+                    </div>
+                    <div class="col col-md-2">
+                        <input class="form-control"
+                               type="text" name="sensor2[triggerWhenValue]" value="200">
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col col-md-8"></div>
+                    <div class="col col-md-6"><label class="col-form-label">When triggered play:&nbsp;</label></div>
                     <div class="col col-md-4">
+                        <select class="form-control" name="sensor2[animation]">
+                            <option>Select a led effect</option>
+                            <option selected>Light 'em up!</option>
+                        </select>
+                    </div>
+                    <div class="col col-md-2">
+                        <button class="btn btn-success btn-sm form-control" type="submit"><i class="fa fa-check"></i> Test</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <hr />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col col-md-6"></div>
+
+                    <div class="col col-md-6">
+                        <a href="/effects" class="fa-pull-right">Create and edit effects</a>
                         <div class="form-group">
-                            <button class="btn btn-primary btn-sm form-control" type="submit">Save Settings</button>
+                            <button class="btn btn-primary btn-sm form-control" type="submit"><i class="fa fa-save"></i> Save Settings</button>
                         </div>
                     </div>
                 </div>
             </div>
+            <div class="card-footer"></div>
         </div>
+
+        <!--- Sensor 2 chart -->
+        <div class="card shadow top card-">
+            <div class="card-header py-3">
+                <div class="row">
+                    <div class="col">
+                        <h3 class="text-primary"><i class="fas fa-wifi"
+                                                    style="transform: rotateZ(90deg);"></i>&nbsp;Sensor 2 Live input chart:</h3>
+                        <p class="text-primary m-0 font-weight-bold"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="inputchart2"></canvas>
+                <div class="row">
+                    <div class="col"><label class="col-form-label">Trigger log:&nbsp;</label></div>
+                    <div class="col">
+                        <table class="table-responsive">
+                            <thead>
+                            <tr><th>Date</th><th>Trigger</th></tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>July 6, 2021 11:45</td>
+                                <td>Trigger via MQTT</td>
+                            </tr>
+                            <tr>
+                                <td>July 6, 2021 11:42</td>
+                                <td>Trigger via Test button</td>
+                            </tr>
+                            <tr>
+                                <td>July 6, 2021 11:15</td>
+                                <td>Trigger via MQTT</td>
+                            </tr>
+                            <tr>
+                                <td>July 6, 2021 11:10</td>
+                                <td>Trigger via MQTT</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </div>
-
+</form>
 
 <script>
    
       
-        var color = Chart.helpers.color;
-        var config = {
-            type: 'line',
-            data: {
-                datasets: [{
-                    backgroundColor: '#3498db',
-                    label: 'Sensor 1 value',
-                    fill: true,
-                    data: [{
-                        x: new Date(),
-                        y: 0
-                    }]
-                }]
+        const color = Chart.helpers.color;
+        let chartOptions =  {
+            animation: {
+                duration: 125, // general animation time
+                transition: 'ease-in'
             },
-            options: {
-                responsive: true,
-                title: {
-                    display: false
-                },
-                elements: {
-                    line: {
-                        tension: 0,
-                        stepped: true,
-                    },
-                },
-               
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        display: true,
-                        time: {
-                            unit: 'second',
-                            displayFormats: {
-                                second: 'hh:mm:ss'
-                            }
-                        },
-                        scaleLabel: {
-                            display: false,
-                            labelString: 'Date'
-                        },
-                        ticks: {
-                            major: {
-                                fontStyle: 'bold',
-                                fontColor: '#FF0000'
-                            }
-                        }
-                    }],
-                    yAxes: [{ 
-                        ticks: {
-                            max: 1,
-                            "beginAtZero": true,
-                            "display": true,
-                            "maxTicksLimit": 2
-                        },
-                        display: true,
-                        scaleLabel: {
-                            display: false,
-                            labelString: 'value'
-                        }
-                    }]
-                }
+            responsive: true,
+            title: {
+                display: true,
+                text: "Sensor #1 : Distance",
+            },
+            legend: {
+                display: false
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                    }
+                }]
             }
         };
 
-    var config2 = {
-        type: 'line',
-        data: {
-            datasets: [{
-                label: 'Sensor 2 value',
-                backgroundColor: '#3498db',
-                fill: true,
-                data: [{
-                    x: new Date(),
-                    y: 0
+        let config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    borderWidth: 1,
+                    label: 'liveCount',
+                    lineTension: 0,
+                    borderColor:'#00c0ef',
+                    backgroundColor: "#00c0ef09",
+                }, {
+                    data: [],
+                    borderWidth: 1,
+                    borderColor:'#FF0000',
+                    label: 'treshold',
+                    backgroundColor: "#FF000010",
                 }]
-            }]
-        },
-        options: {
-            responsive: true,
-            title: {
-                display: false
             },
-            elements: {
-                line: {
-                    tension: 0,
-                    stepped: true,
-                },
-            },
-
-            scales: {
-                xAxes: [{
-                    type: 'time',
-                    display: true,
-                    time: {
-                        unit: 'second',
-                        displayFormats: {
-                            second: 'hh:mm:ss'
-                        }
-                    },
-                    scaleLabel: {
-                        display: false,
-                        labelString: 'Date'
-                    },
-                    ticks: {
-                        major: {
-                            fontStyle: 'bold',
-                            fontColor: '#FF0000'
-                        }
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        max: 1,
-                        "beginAtZero": true,
-                        "display": true,
-                        "maxTicksLimit": 2
-                    },
-                    display: true,
-                    scaleLabel: {
-                        display: false,
-                        labelString: 'value'
-                    }
+            options: chartOptions
+        };
+        let config2 = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    data: [],
+                    borderWidth: 1,
+                    label: 'liveCount',
+                    lineTension: 0,
+                    borderColor: '#00c0ef',
+                    backgroundColor: "#00c0ef09",
+                }, {
+                    data: [],
+                    borderWidth: 1,
+                    borderColor: '#FF0000',
+                    label: 'treshold',
+                    backgroundColor: "#FF000010",
                 }]
-            }
+            },
+            options: chartOptions
         }
-        
-    };
 
         window.onload = function () {
             
-            window.chart1 = new Chart(document.getElementById('inputchart1').getContext('2d'), config);
-            window.chart2 = new Chart(document.getElementById('inputchart2').getContext('2d'), config2);
-            setTimeout(getChartDataPoint, 1000);
+            window.chart1 = new Chart(document.getElementById('inputchart1'), config);
+            window.chart2 = new Chart(document.getElementById('inputchart2'), config2);
 
             window.socket.onmessage = function (result) {
-                var data = JSON.parse(result.data);
-                switch (data.type) {
-                    case 'sensor1':
-                        config.data.datasets[0].data.push({
-                            x: new Date(data.time),
-                            y: data.value
-                        });
-                        if (config.data.datasets[0].data.length > 60) {
-                            config.data.datasets[0].data = config.data.datasets[0].data.slice(1);
-                        }
-                        window.chart1.update();
-                        break;
-                    case 'sensor2':
-                        config2.data.datasets[0].data.push({
-                            x: new Date(data.time),
-                            y: data.value
-                        });
-                        if (config2.data.datasets[0].data.length > 60) {
-                            config2.data.datasets[0].data = config2.data.datasets[0].data.slice(1);
-                        }
-                        window.chart2.update();
-                    break;
-                }
+
+                let messages = JSON.parse(result.data)
+                if(!Array.isArray(messages)) { return; }
+                messages.map((message) => {
+                    myChart = (message.sensor.indexOf("Upstairs") > -1) ? chart1 : chart2;
+                    myChart.data.labels.push(new Date(message.timestamp).toISOString().substr(11, 8));
+                    myChart.data.datasets[0].data.push(message.value);
+                    myChart.data.datasets[1].data.push(200);
+                    if (myChart.data.labels.length > 60) {
+                        myChart.data.labels = myChart.data.labels.slice(1);
+                        myChart.data.datasets[0].data = myChart.data.datasets[0].data.slice(1);
+                    }
+                    myChart.update();
+                });
             }
-        
+            getChartDataPoint();
         };
 
+
         function getChartDataPoint() {
-            window.socket.send('sensor1');
-            window.socket.send('sensor2');   
-            setTimeout(getChartDataPoint, 1000);
+            window.socket.send('mqttlog');
+            setTimeout(getChartDataPoint, 150);
         }
 
 </script>

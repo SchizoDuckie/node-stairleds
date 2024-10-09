@@ -1,64 +1,166 @@
-
 <h3 class="text-dark mb-4">Wifi Settings</h3>
 <div class="row mb-3">
-<div class="col-lg-4">
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="text-primary font-weight-bold m-0">Nearby Access Points</h6>
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="text-primary font-weight-bold m-0">Nearby Access Points</h6>
 
-        </div>
-        <div class="card-body" id="networks">
-            <i class="fa fa-spin fa-4x"></i>
+            </div>
+            <div class="card-body" id="networks">
+                {{#if accessPoints}}
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th scope="col">SSID</th>
+                            <th scope="col">Signal</th>
+                            <th scope="col">Security</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#each accessPoints}}
+                            <tr class="access-point" data-ssid="{{this.ssid}}">
+                                <td>{{this.ssid}}</td>
+                                <td>{{this.signal_level}}</td>
+                                <td>{{this.security}}</td>
+                            </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+                {{else}}
+                    <i class="fa fa-spin fa-4x"></i>
+                {{/if}}
+            </div>
         </div>
     </div>
-</div>
-<div class="col-lg-8">
-    <div class="row">
-        <div class="col">
-            <div class="card shadow mb-3">
-                <div class="card-header py-3">
-                    <p class="text-primary m-0 font-weight-bold">Access Point Settings</p>
-                </div>
-                <div class="card-body">
-                    <form>
-                        <div class="form-row">
-                            <div class=" col-md-6">
-                                <div class="form-group">
-                                    <label for="username"><strong>AP
+    <div class="col-lg-8">
+        <div class="row">
+            <div class="col">
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Access Point Settings</p>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-row">
+                                <div class=" col-md-6">
+                                    <div class="form-group">
+                                        <label for="username"><strong>AP
                                             Name</strong>
-                                    </label>
-                                    <input class="form-control" type="text" placeholder="select an access point" name="apname">
+                                        </label>
+                                        <input class="form-control" type="text" placeholder="select an access point" name="apname" value="{{apName}}">
+                                    </div>
+                                </div>
+                                <div class=" col-md-6">
+                                    <div class="form-group">
+                                        <label for="email">
+                                            <strong>Password</strong>
+                                        </label>
+                                        <input class="form-control" type="password" placeholder="******" name="password" value="{{apPassword}}">
+                                    </div>
                                 </div>
                             </div>
-                            <div class=" col-md-6">
-                                <div class="form-group">
-                                    <label for="email">
-                                        <strong>Password</strong>
-                                    </label>
-                                    <input class="form-control" type="email" placeholder="******" name="email">
-                                </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-sm" type="submit">Save Settings</button>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <button class="btn btn-primary btn-sm" type="submit">Save Settings</button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
-            </div>
-            <div class="card shadow">
-                <div class="card-header py-3">
-                    <p class="text-primary m-0 font-weight-bold">Additional Settings</p>
-                </div>
-                <div class="card-body">
-                    <form>
-                        <div class="form-group"><label for="address"><strong>Hostname</strong></label><input
-                                class="form-control" type="text" placeholder="stairleds" name="hostname">
-                        </div>
-                        <div class="form-group"><button class="btn btn-primary btn-sm"
-                                type="submit">Save&nbsp;Settings</button></div>
-                    </form>
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <p class="text-primary m-0 font-weight-bold">Additional Settings</p>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group"><label for="address"><strong>Hostname</strong></label><input
+                                    class="form-control" type="text" placeholder="stairleds" name="hostname">
+                            </div>
+                            <div class="form-group"><button class="btn btn-primary btn-sm"
+                                                            type="submit">Save&nbsp;Settings</button></div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+
+
+
+
+
+        // Event listener for access point selection
+        $('#networks').on('click', '.access-point', function () {
+            const selectedApName = $(this).text().trim();
+            $('#apname').val(selectedApName);
+        });
+
+        // Event listener for submitting access point settings form
+        $('#access-point-form').submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+
+            $.post(form.attr('action'), form.serialize())
+                    .done(function (data) {
+                        console.log('Access point settings saved: ', data);
+                        $('#apname').val('');
+                        $('#password').val('');
+                        $('#success-message').text(data.message).show();
+                        $('#error-message').hide();
+                    })
+                    .fail(function (err) {
+                        console.error('Error saving access point settings: ', err);
+                        $('#success-message').hide();
+                        $('#error-message').text(err.responseJSON.message).show();
+                    });
+        });
+
+        // Event listener for submitting additional settings form
+        $('#additional-settings-form').submit(function (e) {
+            e.preventDefault();
+            const form = $(this);
+
+            $.post(form.attr('action'), form.serialize())
+                    .done(function (data) {
+                        console.log('Additional settings saved: ', data);
+                        $('#hostname').val('');
+                        $('#success-message').text(data.message).show();
+                        $('#error-message').hide();
+                    })
+                    .fail(function (err) {
+                        console.error('Error saving additional settings: ', err);
+                        $('#success-message').hide();
+                        $('#error-message').text(err.responseJSON.message).show();
+                    });
+        });
+
+        const updateAccessPointsList = async () => {
+            try {
+                const response = await fetch('/wifi/access-points');
+                const data = await response.json();
+
+                if (data.success) {
+                    let html = '<table class="table table-hover"><thead><tr><th scope="col">SSID</th><th scope="col">Signal</th><th scope="col">Security</th></tr></thead><tbody>';
+
+                    data.accessPoints.forEach((ap) => {
+                        html += `<tr class="access-point" data-ssid="${ap.ssid}"><td>${ap.ssid}</td><td>${ap.signal_level}</td><td>${ap.security}</td></tr>`;
+                    });
+
+                    html += '</tbody></table>';
+
+                    $('#networks').html(html);
+                } else {
+                    console.error('Failed to get access points');
+                }
+            } catch (error) {
+                console.error('Error getting access points', error);
+            }
+        };
+
+
+        // Initial call to update the nearby access points list
+        updateAccessPointsList();
+    });
+</script>
