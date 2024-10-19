@@ -8,10 +8,9 @@ import path from "path";
 import LedstripAnimation from "./animationengine/LedstripAnimation.js";
 import { FadeIn, FadeOut, FadeTo, Immediate, Shifting, Sequence } from './animations/index.js';
 import mqtt from "mqtt";
-import { Model } from 'objection';
-import  Knex  from 'knex';
-import StairLog from "./models/StairLog.js";
-
+import StairLog from "./db/entities/Stairlog.js";
+import CRUD from "./db/CRUD.js";
+import mdnsDiscoveryService from './services/MdnsDiscoveryService.js'; // Import the mDNS service
 
 console.log('Starting Extremely Overengineered Stairleds Server');
 
@@ -27,17 +26,23 @@ class StairledApp
         this.mqttClient = this.initMqttClient();
         this.animations = this.initAnimations(this.pinMapper);
         this.sensors = this.initSensors();
+        this.initMdnsDiscovery(); // Initialize mDNS discovery
     }
 
-    initDB() {
-        const knex = Knex({
-            client: 'sqlite3',
-            useNullAsDefault: true,
-            connection: {
-                filename: 'stairleds.sqlite3'
-            }
+    async initDB() {
+        await CRUD.init({
+            adapter: 'NodeSQLiteAdapter',
+            databaseName: 'stairleds.sqlite3'
         });
-        Model.knex(knex);
+    }
+
+    initMdnsDiscovery() {
+        mdnsDiscoveryService.start(); // Start the mDNS discovery service
+
+        // Update sensorDevices when a new device is discovered
+        mdnsDiscoveryService.on('deviceDiscovered', (device) => {
+            console.log('Discovered new sensor device:', device);
+        });
     }
 
     start() {
@@ -49,7 +54,6 @@ class StairledApp
     }
 
     initMqttClient() {
-
         this.mqttHost = 'mqtt://' + this.config.get('mqtt:hostname');
         this.mqttChannel = this.config.get('mqtt:channel');
 
@@ -67,7 +71,6 @@ class StairledApp
             });
         });
         return mqttClient;
-
     }
 
 
@@ -130,24 +133,28 @@ class StairledApp
      * @return {Express}
      */
     initWebServer() {
-
+        server.registerRoutes(this);
         /**
          * registerRoutes is a custom function that loads functionality from /routes
          */
-        server.registerRoutes(this);
-
         server.get('/',  function (req, res) {
             return res.redirect("/dashboard");
         });
         server.get('/dashboard', async function (req, res) {
-            let downstairs = await StairLog.query().where("sensorname", "=", "Sensor Downstairs").resultSize();
-            let upstairs = await StairLog.query().where("sensorname", "=", "Sensor Upstairs").resultSize();
-            console.log("Down triggers: ",downstairs);
-            res.render('dashboard', {
-                "downtriggers": downstairs,
-                "uptriggers": upstairs
-            });
+            try {
+                let downstairs = await CRUD.Find(StairLog, {"sensorname": "Sensor Downstairs"});
+                let upstairs = await CRUD.Find(StairLog, {"sensorname": "Sensor Upstairs"});
+                console.log("Down triggers: ", downstairs.length);
+                res.render('dashboard', {
+                    "downtriggers": downstairs.length,
+                    "uptriggers": upstairs.length
+                });
+            } catch (error) {
+                console.error("Error fetching dashboard data:", error);
+                res.status(500).send("Error loading dashboard data");
+            }
         });
+
         server.get('/about', function (req, res) {
             res.render('about');
         });
@@ -155,7 +162,9 @@ class StairledApp
             res.render('ntp');
         });
 
-
+        server.get('/wifi', function (req, res) {
+            res.render('wifi');
+        });
         server.get('/demo', function (req, res) {
             res.render('demo');
         });

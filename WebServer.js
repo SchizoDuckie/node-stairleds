@@ -4,17 +4,16 @@
  */
 import express from 'express';
 import expressHandlebars from 'express-handlebars';
-import fs from 'fs';
 import handlebars from 'handlebars';
 import bodyParser from 'body-parser';
 import multer from 'multer';
 import path from 'path';
-import walker from 'node-walker';
-// import expressValidator from 'express-validator';
+import fs from 'fs';
+import { readdir } from 'fs/promises';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 
-
-
-const __dirname = path.dirname(process.argv[1]);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 /**
  * If equals handlebars filter
  */
@@ -63,30 +62,39 @@ filenames.forEach(function (filename) {
     return handlebars.registerPartial(name, template);
 });
 
-
 /**
  *
  * @param {StairledApp} application
  */
-app.registerRoutes = function(application) {
-
-    let routepath = __dirname + '/routes';
+app.registerRoutes = async function(application) {
+    let routepath = join(__dirname, 'routes');
     console.log('Including webserver handlers in ' + routepath + '\n----------------------');
-    walker(routepath, async function (err, filename, next) {
-        // an error occurred somewhere along the lines
-        if (err) throw err;
-        // filename
-        if (filename !== null) {
-            let route = await import(filename);
-            try {
-               route.default.register(application);
-            } catch (E) {
-                console.log("Error while registering route: ", filename, E);
+
+    try {
+        const files = await readdir(routepath);
+        for (const file of files) {
+            if (file.endsWith('.js')) {
+                const filePath = join(routepath, file);
+                console.log(`Loading route file: ${filePath}`); // Added logging
+                try {
+                    const route = await import(filePath);
+                    const routeModule = route.default || route;
+                    if (typeof routeModule.register === 'function') {
+                        routeModule.register(application);
+                    } else if (typeof routeModule === 'function' && routeModule.prototype.register) {
+                        const instance = new routeModule();
+                        instance.register(application);
+                    } else {
+                        console.log(`Warning: ${file} does not have a register function.`);
+                    }
+                } catch (error) {
+                    console.log(`Error while registering route: ${file}`, error);
+                }
             }
         }
-        if (next) next();
-    });
-
+    } catch (err) {
+        console.error("Error reading routes directory:", err);
+    }
 }
 
 export { app as default } ;

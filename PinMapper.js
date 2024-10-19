@@ -1,5 +1,4 @@
-import sleeper from "sleep";
-
+import sleeper from "sleep" ;
 var OSCILLATOR_FREQ = 27000000;
 var PWM_FREQUENCY = 52000;
 
@@ -197,6 +196,14 @@ class PinMapper {
 
     saveConfig() {
 
+    }
+
+    /**
+     * Get all mapped LEDs.
+     * @returns {Array} Array of LED pin numbers.
+     */
+    getAllLeds() {
+        return Object.keys(this.pinMapping).map(pin => this.pinMapping[pin].pin);
     }
 
 }

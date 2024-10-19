@@ -1,4 +1,4 @@
 .vscode
-node_modules
-stairleds.sqlite3
-node_modules
+node_modules/
+node_modules/i2c
+node_modules/sleep

@@ -25,6 +25,7 @@ class FadeTo extends TimelineAnimation {
         }
         this.leds = options.leds;
         this.brightnesses = {};
+        this.duration = options.duration || this.duration; // Set duration from options
     }
 
     onStart() {

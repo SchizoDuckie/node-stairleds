@@ -1,10 +1,10 @@
 import TimeLine from '../animationengine/TimeLine.js';
-import TimelineAnimation from  './TimelineAnimation.js';
+import TimelineAnimation from './TimelineAnimation.js';
 import FadeTo from './FadeTo.js';
 
 /**
  * Sequence Animation.
- * Fades led numbers passed in `options.leds[]` from their current brightness to `options.duration` one by one
+ * Fades led numbers passed in `options.leds[]` from their current brightness to `options.brightness` one by one
  */
 class Sequence extends TimelineAnimation { 
 
@@ -52,8 +52,8 @@ class Sequence extends TimelineAnimation {
         let output = {};
         this.timeline.setCurrentPosition(this.absoluteCurrent);
         let items = this.timeline.getActiveItems();
-        for(let item in items) {
-            let pins = items[item].render();
+        for(let item of items) {
+            let pins = item.render();
             for(let pin in pins) {
                 output[pin] = parseInt(pins[pin]);
             }

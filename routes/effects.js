@@ -1,5 +1,6 @@
 import { FadeIn, FadeOut, FadeTo, Immediate, Shifting, Sequence } from '../animations/index.js';
 import LedstripAnimation from '../animationengine/LedstripAnimation.js';
+import effectsList from '../effects/effectsList.js'; // Import the effects list
 
 /**
  * PCA9685 Handling and routes.
@@ -16,19 +17,14 @@ class Effects {
      * @param {PinMapper} pinMapper
      */
     createDemoAnimation(pinMapper) {
-        const fadeIn250 = new FadeIn({ start: 0, end: 200, duration: 250, leds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17] });
-        const fadeOut250 = new FadeOut({ start: 200, end: 0, duration: 250, leds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17] });
-        const fadeInHalf500 = new FadeIn({ start: 0, end: 500, duration: 500, leds: [2,4,6,8,10,12,14,16]});
-        const fadeOutHalf500 = new FadeOut({ start: 500, end: 0, duration: 500, leds: [2,4,6,8,10,12,14,16]});
-
-        const fadeInOtherHalf500 = new FadeIn({ start: 0, end: 500, duration: 500, leds: [1,3,5,6,7,11,13,15,17] });
-        const fadeOutOtherHalf500 = new FadeOut({ start: 500, end: 0, duration: 500, leds: [1,3,5,6,7,11,13,15,17] });
-
-        // fade leds 1-5 one by one over 1000ms
-        const sequenceOn1000 = new Sequence({ brightness: 2000, duration: 1000, leds: [1,2,3,4,5], mapper: pinMapper })
-
-        // shift current led brightness to the pin on the right 8 times over 1000ms
-        const shiftRight5Pins1000 = new Shifting({ direction: 'down', duration: 1000, shifts: 5, leds: [ 10,11,12,13,14,15], mapper: pinMapper })
+        const fadeIn250 = new FadeIn(effectsList.fadeIn250);
+        const fadeOut250 = new FadeOut(effectsList.fadeOut250);
+        const fadeInHalf500 = new FadeIn(effectsList.fadeInHalf500);
+        const fadeOutHalf500 = new FadeOut(effectsList.fadeOutHalf500);
+        const fadeInOtherHalf500 = new FadeIn(effectsList.fadeInOtherHalf500);
+        const fadeOutOtherHalf500 = new FadeOut(effectsList.fadeOutOtherHalf500);
+        const sequenceOn1000 = new Sequence({ brightness: 2000, duration: 1000, leds: [1,2,3,4,5], mapper: pinMapper });
+        const shiftRight5Pins1000 = new Shifting(effectsList.shiftRight5Pins1000);
 
         let animation = (new LedstripAnimation(pinMapper))
             // add a fadein animation that starts at 0ms, lasts 150ms and fades pins 1-6 from 0 to 200
@@ -46,10 +42,10 @@ class Effects {
             .add(2500,  shiftRight5Pins1000.clone())
 
             // animate leds to almost off in sequence from 800 to 20 over 200ms
-            .add(3500,  new Sequence({ brightness: 20,  duration: 1000, leds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], mapper: pinMapper }))
+            .add(3500,  new Sequence({ brightness: 20,  duration: 1000, leds: [0,1,2,3,4,5,6,7,8], mapper: pinMapper }))
 
             // fade all leds out from their current brightness to zero in 250ms.
-            .add(5000, new FadeTo({ brightness: 0, duration: 1000, leds:  [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17], mapper: pinMapper }))
+            .add(5000, new FadeTo({ brightness: 0, duration: 1000, mapper: pinMapper }))
             .add(7700, fadeInHalf500.clone())
             .add(7700, fadeOutOtherHalf500.clone())
             .add(8000, fadeOutHalf500.clone())
@@ -62,8 +58,7 @@ class Effects {
             .add(11000, new Sequence({
                 brightness: 0,
                 duration: 500,
-                leds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],
-                mapper: pinMapper
+                mapper: pinMapper,
             }))
             .add(12000, new FadeIn({
                 start: 0,
@@ -74,16 +69,16 @@ class Effects {
             }))
             .add(12500, new Shifting({
                 duration: 3000,
-                leds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],
                 shifts: 27,
-                mapper: pinMapper
+                mapper: pinMapper,
+                leds: [1, 3, 5, 7, 9, 11, 13, 15, 17],
             }))
             .add(15500, new Shifting({
                 duration: 10000,
-                leds: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],
                 shifts: 180,
                 mapper: pinMapper,
-                direction: 'down'
+                direction: 'down',
+                leds: [1, 3, 5, 7, 9, 11, 13, 15, 17],
             }))
 
         animation.loopInfinite = true;

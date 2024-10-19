@@ -1,355 +1,374 @@
+<h3 class="text-dark mb-4"><i class="fas fa-wifi" style="transform: rotateZ(90deg);"></i>&nbsp;Sensor Settings</h3>
 
-<h3 class="text-dark mb-4"><i class="fas fa-wifi" style="transform: rotateZ(90deg);"></i>&nbsp
-    Sensor Settings</h3>
-<form method="post" action="/sensors">
-<div class="row">
-
-    <div class="col-md-6">
-            <!--- Sensor 1 config -->
-        <div class="card shadow" style="margin-bottom:10px">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-primary">Sensor 1 Configuration</h3>
-                        <p class="text-primary m-0 font-weight-bold"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col"><label class="col-form-label">Sensor Name:&nbsp;</label></div>
-                    <div class="col"><input class="form-control d-xl-flex justify-content-xl-center align-items-xl-center"
-                                            type="text" name="sensor1[name]" value="Sensor Upstairs"></div>
-                </div>
-                <div class="row">
-                    <div class="col"><label class="col-form-label">Sensor Type:&nbsp;</label></div>
-                    <div class="col">
-                        <select class="form-control" name="sensor1[type]">
-                            <option>MQTT</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col"><label class="col-form-label">MQTT Channel:&nbsp;</label></div>
-                    <div class="col"><input class="form-control d-xl-flex justify-content-xl-center align-items-xl-center"
-                            type="text" name="sensor1[channel]" value="sensor"></div>
-                </div>
-                 <div class="row">
-                    <div class="col col-md-6"><label class="col-form-label">Trigger when value:&nbsp;</label></div>
-
-                    <div class="col col-md-4">
-                        <select  class="form-control"  name="sensor1[triggerWhenMethod]">
-                            <option value="<=">Value below ( <= )</option>
-                            <option value="<=">Value above ( >= )</option>
-                            <option value="<=">Value equals ( == )</option>
-                        </select>
-                    </div>
-                     <div class="col col-md-2">
-                        <input class="form-control"
-                            type="text" name="sensor1[triggerWhenValue]" value="200">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col col-md-6"><label class="col-form-label">When triggered play:&nbsp;</label></div>
-                    <div class="col col-md-4">
-                        <select class="form-control" name="sensor1[animation]">
-                            <option>Select a led effect</option>
-                            <option selected>Light 'em up!</option>
-                        </select>
-                     </div>
-                    <div class="col col-md-2">
-                        <button class="btn btn-success btn-sm form-control" type="submit"><i class="fa fa-check"></i> Test</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <hr />
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col col-md-6"></div>
-
-                    <div class="col col-md-6">
-                        <a href="/effects" class="fa-pull-right">Create and edit effects</a>
-                        <div class="form-group">
-                            <button class="btn btn-primary btn-sm form-control" type="submit"><i class="fa fa-save"></i> Save Settings</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer"></div>
-        </div>
-            <!--- Sensor 1 graph -->
-        <div class="card shadow top card-">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-primary"><i class="fas fa-wifi"
-                                                    style="transform: rotateZ(90deg);"></i>&nbsp;Sensor 1 Live input chart:</h3>
-                        <p class="text-primary m-0 font-weight-bold"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <canvas id="inputchart1"></canvas>
-                    <div class="col"><label class="col-form-label">Trigger log:&nbsp;</label></div>
-                    <div class="col">
-                        <table class="table-responsive">
-                            <thead>
-                            <tr><th>Date</th><th>Trigger</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>July 4, 2021 21:45</td>
-                                    <td>Trigger via MQTT</td>
-                                </tr>
-                                <tr>
-                                    <td>July 4, 2021 21:42</td>
-                                    <td>Trigger via Test button</td>
-                                </tr>
-                                <tr>
-                                    <td>July 4, 2021 21:15</td>
-                                    <td>Trigger via MQTT</td>
-                                </tr>
-                                <tr>
-                                    <td>July 4, 2021 21:10</td>
-                                    <td>Trigger via MQTT</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- Add this section to display discovered sensor devices -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">Discovered Sensor Devices</h6>
     </div>
-    <div class="col-md-6">
-
-        <!--- Sensor 2 config -->
-        <div class="card shadow" style="margin-bottom:10px">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-primary">Sensor 2 Configuration</h3>
-                        <p class="text-primary m-0 font-weight-bold"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col"><label class="col-form-label">Sensor Name:&nbsp;</label></div>
-                    <div class="col"><input class="form-control d-xl-flex justify-content-xl-center align-items-xl-center"
-                                            type="text" name="sensor2[name]" value="Sensor Downstairs"></div>
-                </div>
-                <div class="row">
-                    <div class="col"><label class="col-form-label">Sensor Type:&nbsp;</label></div>
-                    <div class="col">
-                        <select class="form-control" name="sensor2[type]">
-                            <option>MQTT</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col"><label class="col-form-label">MQTT Channel:&nbsp;</label></div>
-                    <div class="col"><input class="form-control d-xl-flex justify-content-xl-center align-items-xl-center"
-                                            type="text" name="sensor2[channel]" value="sensor"></div>
-                </div>
-                <div class="row">
-                    <div class="col col-md-6"><label class="col-form-label">Trigger when value:&nbsp;</label></div>
-
-                    <div class="col col-md-4">
-                        <select  class="form-control"  name="sensor2[triggerWhenMethod]">
-                            <option value="<=">Value below ( <= )</option>
-                            <option value="<=">Value above ( >= )</option>
-                            <option value="<=">Value equals ( == )</option>
-                        </select>
-                    </div>
-                    <div class="col col-md-2">
-                        <input class="form-control"
-                               type="text" name="sensor2[triggerWhenValue]" value="200">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col col-md-6"><label class="col-form-label">When triggered play:&nbsp;</label></div>
-                    <div class="col col-md-4">
-                        <select class="form-control" name="sensor2[animation]">
-                            <option>Select a led effect</option>
-                            <option selected>Light 'em up!</option>
-                        </select>
-                    </div>
-                    <div class="col col-md-2">
-                        <button class="btn btn-success btn-sm form-control" type="submit"><i class="fa fa-check"></i> Test</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <hr />
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col col-md-6"></div>
-
-                    <div class="col col-md-6">
-                        <a href="/effects" class="fa-pull-right">Create and edit effects</a>
-                        <div class="form-group">
-                            <button class="btn btn-primary btn-sm form-control" type="submit"><i class="fa fa-save"></i> Save Settings</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer"></div>
-        </div>
-
-        <!--- Sensor 2 chart -->
-        <div class="card shadow top card-">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-primary"><i class="fas fa-wifi"
-                                                    style="transform: rotateZ(90deg);"></i>&nbsp;Sensor 2 Live input chart:</h3>
-                        <p class="text-primary m-0 font-weight-bold"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <canvas id="inputchart2"></canvas>
-                <div class="row">
-                    <div class="col"><label class="col-form-label">Trigger log:&nbsp;</label></div>
-                    <div class="col">
-                        <table class="table-responsive">
-                            <thead>
-                            <tr><th>Date</th><th>Trigger</th></tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                <td>July 6, 2021 11:45</td>
-                                <td>Trigger via MQTT</td>
-                            </tr>
-                            <tr>
-                                <td>July 6, 2021 11:42</td>
-                                <td>Trigger via Test button</td>
-                            </tr>
-                            <tr>
-                                <td>July 6, 2021 11:15</td>
-                                <td>Trigger via MQTT</td>
-                            </tr>
-                            <tr>
-                                <td>July 6, 2021 11:10</td>
-                                <td>Trigger via MQTT</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
+    <div class="card-body">
+        <ul id="sensorDevicesList">
+            {{#each sensorDevices}}
+            <li>{{this.name}} (Address: {{this.address}}, Port: {{this.port}})</li>
+            {{else}}
+            <li>No devices discovered.</li>
+            {{/each}}
+        </ul>
     </div>
 </div>
+
+<form method="post" action="/sensors">
+    <div class="row">
+        <div class="col-md-6">
+            <!--- Sensor 1 config -->
+            <div class="card shadow" style="margin-bottom:10px">
+                <div class="card-header py-3">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-primary">Sensor 1 Configuration</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col"><label class="col-form-label">Sensor Name:&nbsp;</label></div>
+                        <div class="col"><input class="form-control" type="text" name="sensor1[name]"
+                                value="Sensor Upstairs"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col"><label class="col-form-label">Sensor Type:&nbsp;</label></div>
+                        <div class="col">
+                            <select class="form-control" name="sensor1[type]">
+                                <option>MQTT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col"><label class="col-form-label">MQTT Channel:&nbsp;</label></div>
+                        <div class="col"><input class="form-control" type="text" name="sensor1[channel]" value="sensor">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6"><label class="col-form-label">Trigger when value:&nbsp;</label></div>
+                        <div class="col col-md-4">
+                            <select class="form-control" name="sensor1[triggerWhenMethod]">
+                                <option value="<=">Value below ( <= )</option>
+                                <option value=">=">Value above ( >= )</option>
+                                <option value="==">Value equals ( == )</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-2">
+                            <input class="form-control" type="text" name="sensor1[triggerWhenValue]" value="200">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6"><label class="col-form-label">When triggered play:&nbsp;</label></div>
+                        <div class="col col-md-4">
+                            <select class="form-control" name="sensor1[animation]">
+                                <option>Select a led effect</option>
+                                <option selected>Light 'em up!</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-2">
+                            <button class="btn btn-success btn-sm form-control" type="submit"><i
+                                    class="fa fa-check"></i> Test</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <hr />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6"></div>
+                        <div class="col col-md-6">
+                            <a href="/effects" class="fa-pull-right">Create and edit effects</a>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-sm form-control" type="submit"><i
+                                        class="fa fa-save"></i> Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer"></div>
+            </div>
+            <!--- Sensor 1 graph -->
+            <div class="card shadow top card-">
+                <div class="card-header py-3">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-primary"><i class="fas fa-wifi"
+                                    style="transform: rotateZ(90deg);"></i>&nbsp;Sensor 1 Live input chart:</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <canvas id="inputchart1"></canvas>
+                        <div class="col"><label class="col-form-label">Trigger log:&nbsp;</label></div>
+                        <div class="col">
+                            <table class="table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Trigger</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>July 4, 2021 21:45</td>
+                                        <td>Trigger via MQTT</td>
+                                    </tr>
+                                    <tr>
+                                        <td>July 4, 2021 21:42</td>
+                                        <td>Trigger via Test button</td>
+                                    </tr>
+                                    <tr>
+                                        <td>July 4, 2021 21:15</td>
+                                        <td>Trigger via MQTT</td>
+                                    </tr>
+                                    <tr>
+                                        <td>July 4, 2021 21:10</td>
+                                        <td>Trigger via MQTT</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <!--- Sensor 2 config -->
+            <div class="card shadow" style="margin-bottom:10px">
+                <div class="card-header py-3">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-primary">Sensor 2 Configuration</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col"><label class="col-form-label">Sensor Name:&nbsp;</label></div>
+                        <div class="col"><input class="form-control" type="text" name="sensor2[name]"
+                                value="Sensor Downstairs"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col"><label class="col-form-label">Sensor Type:&nbsp;</label></div>
+                        <div class="col">
+                            <select class="form-control" name="sensor2[type]">
+                                <option>MQTT</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col"><label class="col-form-label">MQTT Channel:&nbsp;</label></div>
+                        <div class="col"><input class="form-control" type="text" name="sensor2[channel]" value="sensor">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6"><label class="col-form-label">Trigger when value:&nbsp;</label></div>
+                        <div class="col col-md-4">
+                            <select class="form-control" name="sensor2[triggerWhenMethod]">
+                                <option value="<=">Value below ( <= )</option>
+                                <option value=">=">Value above ( >= )</option>
+                                <option value="==">Value equals ( == )</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-2">
+                            <input class="form-control" type="text" name="sensor2[triggerWhenValue]" value="200">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6"><label class="col-form-label">When triggered play:&nbsp;</label></div>
+                        <div class="col col-md-4">
+                            <select class="form-control" name="sensor2[animation]">
+                                <option>Select a led effect</option>
+                                <option selected>Light 'em up!</option>
+                            </select>
+                        </div>
+                        <div class="col col-md-2">
+                            <button class="btn btn-success btn-sm form-control" type="submit"><i
+                                    class="fa fa-check"></i> Test</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <hr />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col col-md-6"></div>
+                        <div class="col col-md-6">
+                            <a href="/effects" class="fa-pull-right">Create and edit effects</a>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-sm form-control" type="submit"><i
+                                        class="fa fa-save"></i> Save Settings</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer"></div>
+            </div>
+            <!--- Sensor 2 chart -->
+            <div class="card shadow top card-">
+                <div class="card-header py-3">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-primary"><i class="fas fa-wifi"
+                                    style="transform: rotateZ(90deg);"></i>&nbsp;Sensor 2 Live input chart:</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="inputchart2"></canvas>
+                    <div class="row">
+                        <div class="col"><label class="col-form-label">Trigger log:&nbsp;</label></div>
+                        <div class="col">
+                            <table class="table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Trigger</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>July 6, 2021 11:45</td>
+                                        <td>Trigger via MQTT</td>
+                                    </tr>
+                                    <tr>
+                                        <td>July 6, 2021 11:42</td>
+                                        <td>Trigger via Test button</td>
+                                    </tr>
+                                    <tr>
+                                        <td>July 6, 2021 11:15</td>
+                                        <td>Trigger via MQTT</td>
+                                    </tr>
+                                    <tr>
+                                        <td>July 6, 2021 11:10</td>
+                                        <td>Trigger via MQTT</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
 
 <script>
-   
-      
-        const color = Chart.helpers.color;
-        let chartOptions =  {
-            animation: {
-                duration: 125, // general animation time
-                transition: 'ease-in'
-            },
-            responsive: true,
-            title: {
-                display: true,
-                text: "Sensor #1 : Distance",
-            },
-            legend: {
-                display: false
-            },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                    }
-                }]
-            }
-        };
-
-        let config = {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    data: [],
-                    borderWidth: 1,
-                    label: 'liveCount',
-                    lineTension: 0,
-                    borderColor:'#00c0ef',
-                    backgroundColor: "#00c0ef09",
-                }, {
-                    data: [],
-                    borderWidth: 1,
-                    borderColor:'#FF0000',
-                    label: 'treshold',
-                    backgroundColor: "#FF000010",
-                }]
-            },
-            options: chartOptions
-        };
-        let config2 = {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    data: [],
-                    borderWidth: 1,
-                    label: 'liveCount',
-                    lineTension: 0,
-                    borderColor: '#00c0ef',
-                    backgroundColor: "#00c0ef09",
-                }, {
-                    data: [],
-                    borderWidth: 1,
-                    borderColor: '#FF0000',
-                    label: 'treshold',
-                    backgroundColor: "#FF000010",
-                }]
-            },
-            options: chartOptions
+    const color = Chart.helpers.color;
+    let chartOptions = {
+        animation: {
+            duration: 125, // general animation time
+            transition: 'ease-in'
+        },
+        responsive: true,
+        title: {
+            display: true,
+            text: "Sensor #1 : Distance",
+        },
+        legend: {
+            display: false
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                }
+            }]
         }
+    };
 
-        window.onload = function () {
-            
-            window.chart1 = new Chart(document.getElementById('inputchart1'), config);
-            window.chart2 = new Chart(document.getElementById('inputchart2'), config2);
+    let config = {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                borderWidth: 1,
+                label: 'liveCount',
+                lineTension: 0,
+                borderColor: '#00c0ef',
+                backgroundColor: "#00c0ef09",
+            }, {
+                data: [],
+                borderWidth: 1,
+                borderColor: '#FF0000',
+                label: 'threshold',
+                backgroundColor: "#FF000010",
+            }]
+        },
+        options: chartOptions
+    };
+    let config2 = {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                borderWidth: 1,
+                label: 'liveCount',
+                lineTension: 0,
+                borderColor: '#00c0ef',
+                backgroundColor: "#00c0ef09",
+            }, {
+                data: [],
+                borderWidth: 1,
+                borderColor: '#FF0000',
+                label: 'threshold',
+                backgroundColor: "#FF000010",
+            }]
+        },
+        options: chartOptions
+    }
 
-            window.socket.onmessage = function (result) {
+    window.onload = function () {
+        window.chart1 = new Chart(document.getElementById('inputchart1'), config);
+        window.chart2 = new Chart(document.getElementById('inputchart2'), config2);
 
-                let messages = JSON.parse(result.data)
-                if(!Array.isArray(messages)) { return; }
-                messages.map((message) => {
-                    myChart = (message.sensor.indexOf("Upstairs") > -1) ? chart1 : chart2;
-                    myChart.data.labels.push(new Date(message.timestamp).toISOString().substr(11, 8));
-                    myChart.data.datasets[0].data.push(message.value);
-                    myChart.data.datasets[1].data.push(200);
-                    if (myChart.data.labels.length > 60) {
-                        myChart.data.labels = myChart.data.labels.slice(1);
-                        myChart.data.datasets[0].data = myChart.data.datasets[0].data.slice(1);
-                    }
-                    myChart.update();
+        window.socket.onmessage = function (result) {
+            let messages = JSON.parse(result.data);
+            if (!Array.isArray(messages)) { return; }
+            messages.map((message) => {
+                myChart = (message.sensor.indexOf("Upstairs") > -1) ? chart1 : chart2;
+                myChart.data.labels.push(new Date(message.timestamp).toISOString().substr(11, 8));
+                myChart.data.datasets[0].data.push(message.value);
+                myChart.data.datasets[1].data.push(200);
+                if (myChart.data.labels.length > 60) {
+                    myChart.data.labels = myChart.data.labels.slice(1);
+                    myChart.data.datasets[0].data = myChart.data.datasets[0].data.slice(1);
+                }
+                myChart.update();
+            });
+        }
+        getChartDataPoint();
+
+        // Add this: Periodically refresh sensor devices
+        setInterval(refreshSensorDevices, 5000); // Refresh every 5 seconds
+    };
+
+    function getChartDataPoint() {
+        window.socket.send('mqttlog');
+        setTimeout(getChartDataPoint, 150);
+    }
+
+    // Add this function to refresh sensor devices
+    function refreshSensorDevices() {
+        fetch('/api/sensor-devices')
+            .then(response => response.json())
+            .then(devices => {
+                const devicesList = document.getElementById('sensorDevicesList');
+                devicesList.innerHTML = ''; // Clear existing list
+                devices.forEach(device => {
+                    const li = document.createElement('li');
+                    li.textContent = `${device.name} (Address: ${device.address}, Port: ${device.port})`;
+                    devicesList.appendChild(li);
                 });
-            }
-            getChartDataPoint();
-        };
-
-
-        function getChartDataPoint() {
-            window.socket.send('mqttlog');
-            setTimeout(getChartDataPoint, 150);
-        }
-
+            })
+            .catch(error => console.error('Error fetching sensor devices:', error));
+    }
 </script>

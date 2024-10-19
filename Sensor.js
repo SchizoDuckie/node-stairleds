@@ -1,4 +1,4 @@
-import StairLog from "./models/StairLog.js";
+import Stairlog from "./db/entities/Stairlog.js";
 
 class Sensor {
 
@@ -79,16 +79,14 @@ class Sensor {
             }
 
             try {
-                let logRecord = {
-                    "sensorname": this.name,
-                    "sensorvalue": value,
-                    "effect": this.triggerEffect
-                };
-                await StairLog.query().insert(logRecord);
+                let logRecord = new Stairlog();
+                logRecord.sensorname = this.name,
+                    logRecord.sensorvalue = value;
+                logRecord.effect = this.triggerEffect;
+                logRecord.Save();
             } catch (E) {
                 console.log("Error during log insert into sqlite3: ",E);
             }
-
         }
     }
 

@@ -15,6 +15,7 @@ class Immediate extends TimelineAnimation {
     constructor(options) {
          super(options) ;
          this.done = false;
+         this.duration = 50; // Fixed duration for immediate effect
     }
 
     /**

@@ -20,6 +20,7 @@ class FadeOut extends TimelineAnimation {
     constructor(options) {
         super(options);
         this.brightnesses = {};
+        this.duration = options.duration || this.duration; // Set duration from options
     }
 
     onStart() {

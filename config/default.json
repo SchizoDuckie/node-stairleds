@@ -5,12 +5,6 @@
       "correctionFactor": "1.0",
       "address": "0x40",
       "device": "/dev/i2c-1"
-    },
-    "B": {
-      "freq": "120",
-      "correctionFactor": "1.0",
-      "address": "0x41",
-      "device": "/dev/i2c-1"
     }
   },
   "pinmapper": {
@@ -47,39 +41,39 @@
       "pin": 7
     },
     "9": {
-      "driver": "B",
+      "driver": "A",
       "pin": 14
     },
     "10": {
-      "driver": "B",
+      "driver": "A",
       "pin": 15
     },
     "11": {
-      "driver": "B",
+      "driver": "A",
       "pin": 11
     },
     "12": {
-      "driver": "B",
+      "driver": "A",
       "pin": 13
     },
     "13": {
-      "driver": "B",
+      "driver": "A",
       "pin": 12
     },
     "14": {
-      "driver": "B",
+      "driver": "A",
       "pin": 10
     },
     "15": {
-      "driver": "B",
+      "driver": "A",
       "pin": 9
     },
     "16": {
-      "driver": "B",
+      "driver": "A",
       "pin": 8
     },
     "17": {
-      "driver": "B",
+      "driver": "A",
       "pin": 7
     }
   },
