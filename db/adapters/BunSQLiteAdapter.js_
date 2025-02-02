@@ -37,7 +37,6 @@ class BunSQLiteAdapter extends ConnectionAdapter {
         if (!this.db) {
             this.db = new Database(databaseName, { create: true, readwrite: true });
             this.db.exec("PRAGMA journal_mode = WAL;");
-            console.log(`Connected to database ${databaseName}!`);
         }
         return true;
     }

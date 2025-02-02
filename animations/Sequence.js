@@ -9,17 +9,34 @@ import FadeTo from './FadeTo.js';
 class Sequence extends TimelineAnimation { 
 
     /**
-     * Options: `Object{}` with these mandatory properties
-     * - brightness `int[0-4095]` end brightness
-     * - duration: `int` duration in ms it takes to animate all the leds in sequence
-     * - mapper: `LedMapper` an instance of the PinMapper class to find current pin brightnesses from  
-     * - leds: `array` led numbers to fade in
-     * @param {Object} options 
+     * Defines validation rules for Sequence animation
+     * @returns {Object} Validation configuration
+     */
+    static getValidationRules() {
+        return {
+            required: ['duration', 'leds', 'brightness'],
+            types: {
+                duration: 'number',
+                leds: 'array',
+                brightness: 'number'
+            },
+            ranges: {
+                duration: { min: 0 },
+                brightness: { min: 0, max: 4095 }
+            }
+        };
+    }
+
+    /**
+     * Creates a new Sequence animation
+     * @param {Object} options
+     * @param {number} options.brightness - Target brightness [0-4095]
+     * @param {number} options.duration - Animation duration in ms
+     * @param {Object} options.mapper - LedMapper instance to find current pin brightnesses
+     * @param {number[]} options.leds - LED numbers to fade in sequence
+     * @throws {Error} When required options are missing or invalid
      */
     constructor(options) {
-        if(!("brightness" in options)) {
-            throw new Error("Required option 'brightness' is missing for Sequence " + JSON.stringify(options));
-        }
         super(options);
 
         this.timeline = new TimeLine();
@@ -44,10 +61,17 @@ class Sequence extends TimelineAnimation {
         }
     }
 
+    /**
+     * Called when the animation starts
+     */
     onStart() {
         this.timeline.setStartTime(this.absoluteStart);
     }
 
+    /**
+     * Renders the current animation frame
+     * @returns {Object.<string, number>} LED states for this frame, where key is LED number and value is brightness
+     */
     render() {
         let output = {};
         this.timeline.setCurrentPosition(this.absoluteCurrent);
@@ -62,9 +86,14 @@ class Sequence extends TimelineAnimation {
         return output;
     }
 
+    /**
+     * Converts the animation to a string representation for debugging
+     */
     toString() {
         console.log(this.constructor.name, this.options, this.timeline);
     }
- }
+
+   
+}
 
 export default Sequence;

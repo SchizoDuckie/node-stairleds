@@ -1,42 +1,86 @@
 import { spawn } from 'child_process';
-import EventEmitter from 'events';
+import { eventBus, Events } from './EventBus.js';
 
-class MdnsDiscoveryService extends EventEmitter {
+class MdnsDiscoveryService {
     constructor() {
-        super();
-        this.devices = []; // Store discovered devices
+        this.devices = [];
         this.process = null;
+        this.outputBuffer = '';
+        this.intervalId = null;
+        this.isStarted = false;
     }
 
     start() {
-        this.process = spawn('avahi-browse', ['-p', '-t', '-r', '_mqtt._tcp']);
+        if (this.isStarted) {
+            eventBus.emit(Events.SYSTEM_INFO, 'mDNS discovery service is already running');
+            return;
+        }
+        
+        this.discoverDevices();
+        this.intervalId = setInterval(() => this.discoverDevices(), 30000);
+        this.isStarted = true;
+        
+        console.log('🔎 mDNS discovery service started');
+        eventBus.emit(Events.SERVICE_STATUS, 'mdns', 'running');
+    }
 
+    discoverDevices() {
+        const timeout = setTimeout(() => {
+            if (this.process) {
+                this.process.kill();
+                eventBus.emit(Events.SYSTEM_DEBUG, 'mDNS discovery timed out, will retry next cycle');
+            }
+        }, 15000);
+
+        this.process = spawn('avahi-browse', ['-a', '-r', '-t', '-p'], {
+            stdio: ['ignore', 'pipe', 'ignore']
+        });
+        
+        let buffer = '';
         this.process.stdout.on('data', (data) => {
-            const lines = data.toString().trim().split('\n');
-            lines.forEach(this.parseLine.bind(this));
+            buffer += data.toString();
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+            
+            lines.forEach(line => {
+                if (line.trim()) {
+                    this.parseLine(line.trim());
+                }
+            });
         });
 
-        this.process.stderr.on('data', (data) => {
-            console.error(`avahi-browse stderr: ${data}`);
+        this.process.on('close', () => {
+            clearTimeout(timeout);
+            eventBus.emit(Events.SYSTEM_DEBUG, 'mDNS discovery completed');
         });
-
-        console.log('mDNS discovery service started using avahi-browse');
     }
 
     parseLine(line) {
-        const parts = line.split('\t');
-        if (parts.length === 9 && parts[0] === '=') {
-            const device = {
-                name: parts[3],
-                address: parts[7],
-                port: parseInt(parts[8], 10)
-            };
+        if (!line.startsWith('=')) return;
+        
+        const fields = line.split(';');
+        if (fields.length < 9) return;
+        
+        if (fields[4] !== '_mqtt._tcp') return;
 
-            if (!this.devices.some(d => d.name === device.name)) {
-                this.devices.push(device);
-                this.emit('deviceDiscovered', device);
-                console.log('Discovered new sensor device:', device);
-            }
+        const device = {
+            interface: fields[1],
+            protocol: fields[2],
+            name: fields[3],
+            type: fields[4],
+            domain: fields[5],
+            host: fields[6],
+            address: fields[7],
+            port: parseInt(fields[8], 10)
+        };
+
+        const existingDeviceIndex = this.devices.findIndex(d => d.host === device.host);
+        if (existingDeviceIndex === -1) {
+            this.devices.push(device);
+            eventBus.emit(Events.SENSOR_DISCOVERED, device);
+        } else {
+            this.devices[existingDeviceIndex] = device;
+            eventBus.emit(Events.SENSOR_UPDATED, device);
         }
     }
 
@@ -45,12 +89,18 @@ class MdnsDiscoveryService extends EventEmitter {
             this.process.kill();
             this.process = null;
         }
-        console.log('mDNS discovery service stopped');
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+            this.intervalId = null;
+        }
+        this.isStarted = false;
+        eventBus.emit(Events.SERVICE_STATUS, 'mdns', 'stopped');
+        eventBus.emit(Events.SYSTEM_INFO, 'mDNS discovery service stopped');
     }
 
     getDiscoveredDevices() {
-        return this.devices; // Return the current list of devices
+        return this.devices;
     }
 }
 
-export default new MdnsDiscoveryService();
+export default MdnsDiscoveryService;

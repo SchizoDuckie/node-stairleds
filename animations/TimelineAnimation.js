@@ -32,6 +32,7 @@ const ALPHABET = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 class TimelineAnimation {
 
     constructor(options) {
+        this.validateOptions(options);
         this.options = options;
         this.absoluteStart = 0;
         this.absoluteEnd = null;
@@ -43,6 +44,80 @@ class TimelineAnimation {
         this.ended = false;
         this.started = false;
         this.id = this.generateId();
+    }
+
+    /**
+     * Get validation rules for this animation type
+     * Override in subclasses to define specific validation rules
+     * @returns {Object} Validation rules for the animation
+     */
+    static getValidationRules() {
+        return {
+            required: ['duration', 'leds'],
+            types: {
+                duration: 'number',
+                leds: 'array'
+            },
+            ranges: {
+                duration: { min: 0 },
+                brightness: { min: 0, max: 4095 }
+            }
+        };
+    }
+
+    /**
+     * Validates animation options against the defined rules
+     * @protected
+     * @param {Object} options - Animation options to validate
+     * @throws {Error} When validation fails
+     */
+    validateOptions(options) {
+        if (!options) {
+            throw new Error("Options object is required");
+        }
+
+        const rules = this.constructor.getValidationRules();
+        
+        // Check required fields
+        for (const field of rules.required || []) {
+            if (options[field] === undefined) {
+                throw new Error(`'${field}' is required for ${this.constructor.name}`);
+            }
+        }
+
+        // Check types
+        for (const [field, type] of Object.entries(rules.types || {})) {
+            if (options[field] !== undefined) {
+                const actualType = Array.isArray(options[field]) ? 'array' : typeof options[field];
+                if (actualType !== type) {
+                    throw new Error(`'${field}' must be of type ${type}, got ${actualType}`);
+                }
+            }
+        }
+
+        // Check ranges
+        for (const [field, range] of Object.entries(rules.ranges || {})) {
+            if (options[field] !== undefined) {
+                if (range.min !== undefined && options[field] < range.min) {
+                    throw new Error(`'${field}' must be >= ${range.min}`);
+                }
+                if (range.max !== undefined && options[field] > range.max) {
+                    throw new Error(`'${field}' must be <= ${range.max}`);
+                }
+            }
+        }
+
+        // Validate leds array if provided
+        if (options.leds !== undefined) {
+            if (!Array.isArray(options.leds)) {
+                throw new Error(`'leds' must be an array, got: ${typeof options.leds}`);
+            }
+        }
+
+        // Validate mapper if provided
+        if (options.mapper !== undefined && typeof options.mapper !== 'object') {
+            throw new Error(`'mapper' must be an object, got: ${typeof options.mapper}`);
+        }
     }
 
     reset() {

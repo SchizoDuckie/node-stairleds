@@ -1,8 +1,13 @@
 import Stairlog from "./db/entities/Stairlog.js";
+import { eventBus, Events } from './services/EventBus.js';
+import { animationService } from './services/AnimationService.js';
 
 class Sensor {
-
-    constructor(config, mqttClient, animations) {
+    /**
+     * Creates a new sensor instance
+     * @param {object} config - Sensor configuration
+     */
+    constructor(config) {
         this.enabled = config.enabled;
         this.name = config.name;
         this.type = config.type;
@@ -13,27 +18,35 @@ class Sensor {
         this.upperTreshold = config.upperTreshold;
         this.active = false;
         this.lastTriggered = null;
-        this.initMqttSubscription(mqttClient);
-        this.anim = animations[this.triggerEffect];
-        this.animations = animations;
+        this.lastLogTime = 0;
+        
+        // Get animation from centralized service
+        this.anim = animationService.animations.get(this.triggerEffect);
+        
+        if (!this.anim) {
+            eventBus.emit(Events.SYSTEM_ERROR, 
+                `Animation '${this.triggerEffect}' not found for sensor ${this.name}`);
+        }
+        
+        this.initEventListeners();
     }
 
-    initMqttSubscription(mqttClient) {
-
-        mqttClient.on('message',  (topic, message) => {
-            let messageParts = message.toString().split("|"),
-                sensorName = messageParts[0],
-                value = parseInt(messageParts[1]),
-                state = parseInt(messageParts[2]);
-//	    console.log("Sensor: ", sensorName, "my name: ", this.name, value);
-            if (sensorName === this.name) {
-                this.processTrigger(value);
+    initEventListeners() {
+        eventBus.on(Events.SENSOR_DATA, (sensorName, value) => {
+            if (sensorName !== this.name) return;
+            
+            const now = Date.now();
+            if (now - this.lastLogTime >= 1000) {
+                eventBus.emit(Events.SYSTEM_DEBUG, 
+                    `Sensor ${this.name} reading: ${value}`);
+                this.lastLogTime = now;
             }
+
+            this.processTrigger(value);
         });
     }
 
     processTrigger(value) {
-//console.debug("Process trigger? ", value, this.triggerType, this.triggerTreshold);
         if(value > this.upperTreshold) return;
 
         switch (this.triggerType) {
@@ -52,45 +65,50 @@ class Sensor {
                     this.trigger(value);
                 }
                 break;
-
         }
     }
 
     async trigger(value) {
         if(!this.active) {
-
             this.active = true;
             this.lastTriggered = new Date();
-            console.log(`[${this.lastTriggered.toLocaleString()}] Sensor '${this.name}' just triggered! Measured ${value} ${this.triggerType} configured treshold ${this.triggerTreshold}. Starting LedstripAnimation '${this.triggerEffect}'`);
+            
+            eventBus.emit(Events.SYSTEM_INFO, 
+                `Sensor '${this.name}' triggered! Measured ${value} ${this.triggerType} configured treshold ${this.triggerTreshold}. Starting LedstripAnimation '${this.triggerEffect}'`);
+            
             setTimeout(() => { this.active=false }, 2000);
+            
             if(this.anim) {
-                let skip=false;
-                Object.keys(this.animations).map(anim => {
-                    if(this.animations[anim].started) {
-                        console.log(`Animation ${anim} is still active, not starting a new one`);
-                        skip=true;
+                let skip = false;
+                // Check all animations through the service
+                animationService.animations.forEach(anim => {
+                    if(anim.started) {
+                        eventBus.emit(Events.SYSTEM_DEBUG, 
+                            `Animation ${anim.name} is still active, not starting a new one`);
+                        skip = true;
                     }
-                })
+                });
+                
                 if(!skip) {
                     this.anim.start();
                 }
             } else {
-                console.log(`Not starting anim ${this.triggerEffect} because it wasn't found.`);
+                eventBus.emit(Events.SYSTEM_ERROR, 
+                    `Not starting anim ${this.triggerEffect} because it wasn't found.`);
             }
 
             try {
                 let logRecord = new Stairlog();
-                logRecord.sensorname = this.name,
-                    logRecord.sensorvalue = value;
+                logRecord.sensorname = this.name;
+                logRecord.sensorvalue = value;
                 logRecord.effect = this.triggerEffect;
-                logRecord.Save();
-            } catch (E) {
-                console.log("Error during log insert into sqlite3: ",E);
+                await logRecord.Save();
+            } catch (error) {
+                eventBus.emit(Events.SYSTEM_ERROR, 
+                    `Error during log insert into sqlite3: ${error.message}`);
             }
         }
     }
-
-
 }
 
 export default Sensor;

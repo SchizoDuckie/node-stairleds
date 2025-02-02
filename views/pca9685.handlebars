@@ -1,226 +1,423 @@
 <h3 class="text-dark mb-4"><i class="fa fa-microchip"></i>&nbsp;PCA9685 Pin Mappings</h3>
 <form method="post">
-<div class="row">
-    <div class="col">
-        <p>Configure the port mappings for your stair leds here. You can verify which led is connected to which step
-            by using the test green test buttons and sliders 
-            <button type='submit' class='btn btn-outline-danger btn-sm'><i class='fa fa-save'></i> Save Changes</button>
-        </p>
+    <div class="row">
+        <div class="col">
+            <p>Configure the port mappings for your stair leds here. You can verify which led is connected to which step
+                by using the test green test buttons and sliders 
+                <button type='submit' class='btn btn-outline-danger btn-sm'><i class='fa fa-save'></i> Save Changes</button>
+            </p>
+        </div>
     </div>
-</div>
-<section></section>
-<div class="row">
-    <div class="col-md-6">
-        <!-- PCA9685 1 -->
-        <div class="card shadow pca9685" id="pca9685_1">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-primary"><i class="fa fa-microchip"></i>&nbsp;LED Driver A</h3>
-                        <p class="text-primary m-0 font-weight-bold"></p>
+
+      <div class="row">
+        {{#each drivers as |ports address|}}
+        <div class="col-md-4">
+            <div class="card shadow pca9685" id="driver_{{address}}" data-driver="{{address}}">
+                <div class="card-header py-3">
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="text-primary"><i class="fa fa-microchip"></i>&nbsp;LED Driver: <code>{{address}}</code></h3>
+                        </div>
                     </div>
-                    <div class="col"><label class="col-form-label text-nowrap text-right float-right">I²C
-                            address:&nbsp;<select name="i2c_1"
-                                class="i2caddress form-control form-control-sm custom-select custom-select-sm"
-                                style="width: 80px;">
-                                <option value="0x40" selected>0x40</option>
-                                <option value="0x41">0x41</option>
-                            </select>&nbsp;</label></div>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive table mt-2" id="dataTable" role="grid"
-                    aria-describedby="dataTable_info">
-                    <table class="table table-sm dataTable my-0" id="dataTable">
-                        <thead>
-                            <tr>
-                                <th><label for="allinputs1" style="margin:0"> <input type="checkbox"
-                                            class="allinputs" id='allinputs1'> Use</label></th>
-                                <th>Port #</th>
-                                <th>Step #</th>
-                                <td></td>
-                                <th>Test <label for="linksliders" style="float:right; margin:0"> 
-                                    <input type="checkbox" class="linksliders" id='linksliders'> Link all
-                                        sliders
-                                    </label><br>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {{#each pca9685_A}}
-                            <tr{{#if_neq this null }} class="table-active"{{/if_neq}}>
-                                <td><input type="checkbox" class="form-control"  {{#if_neq this null }}checked{{/if_neq}}></td>
-                                <td>{{inc @key}}</td>
-                                <td><input class="bg-dark border rounded {{#if_eq this null }}border-dark{{/if_eq}}{{#if_neq this null }}border-primary{{/if_neq}} form-control-sm" type="number" name="pca9685_A[1_{{ @key }}]" {{#if_eq this null }}disabled="disabled"{{/if_eq}} style="color: #b1b1b1;width: 60px;" {{#if_neq this null }}value="{{ this }}" {{/if_neq}}></td>
-                                <td> <button class='btn btn-sm btn-outline-success' data-identify><i class='fa fa-lightbulb'></i></button>   </td>
-                                <td><input class="custom-range" type="range" value="0" min="0" max="4095" data-number="{{@key}}" ><br></td>
-                            </tr>
-                            {{/each}}
-                        </tbody>
-                        <tfoot>
-                            <tr></tr>
-                        </tfoot>
-                    </table>
+                <div class="card-body">
+                    <div class="table-responsive table mt-2" role="grid">
+                        <label for="linksliders_{{address}}" style="float:right; margin:0">
+                            <input type="checkbox" class="linksliders" id='linksliders_{{address}}' data-driver="{{address}}"> Link all sliders
+                        </label>
+                        <table class="table table-sm my-0">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <label for="enable_{{address}}" style="margin:0; white-space: nowrap;">
+                                            <input type="checkbox" class="enable-all" id='enable_{{address}}' data-driver="{{address}}"> Use
+                                        </label>
+                                    </th>
+                                    <th title="PCA9685 Port Number">#</th>
+                                    <th title=""Stair step #">Step #</th>
+                                    <td></td>
+                                    <th>
+
+                                        Test
+                                        {{#if @first}}
+                                        
+                                        {{/if}}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each ports as |stepNum portNum|}}
+                                <tr{{#if stepNum}} class="table-active"{{/if}}>
+                                    <td>
+                                        <input type="checkbox" {{#if stepNum}}checked{{/if}}>
+                                    </td>
+                                    <td>{{portNum}}</td>
+                                    <td>
+                                        <input class="bg-dark border rounded {{#unless stepNum}}border-dark{{else}}border-primary{{/unless}} form-control-sm" 
+                                               type="number" 
+                                               name="pins[{{address}}][{{portNum}}]" 
+                                               {{#unless stepNum}}disabled="disabled"{{/unless}} 
+                                               style="color: #b1b1b1;width: 60px;" 
+                                               {{#if stepNum}}value="{{stepNum}}"{{/if}}
+                                               min="1"
+                                               max="100">
+                                    </td>
+                                    <td>
+                                        <button type='button' class='btn btn-sm btn-outline-success' data-identify>
+                                            <i class='fa fa-lightbulb'></i>
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <input class="custom-range" type="range" value="0" min="0" max="4095" 
+                                               data-driver="{{address}}" data-port="{{portNum}}">
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+        {{/each}}
     </div>
-    <div class="col-md-6">
-        <!-- PCA9685 2 -->
-        <div class="card pca9685" id="pca9685_2">
-            <div class="card-header py-3">
-                <div class="row">
-                    <div class="col">
-                        <h3 class="text-primary"><i class="fa fa-microchip"></i>&nbsp;LED Driver B</h3>
-                        <p class="text-primary m-0 font-weight-bold"></p>
-                    </div>
-                    <div class="col"><label class="col-form-label text-nowrap text-right float-right">I²C
-                            address:&nbsp;<select name="i2c_2"
-                                class="i2caddress form-control form-control-sm custom-select custom-select-sm"
-                                style="width: 80px;">
-                                <option value="0x40">0x40</option>
-                                <option value="0x41" selected>0x41</option>
-                            </select>&nbsp;</label></div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive table mt-2" id="dataTable" role="grid"
-                    aria-describedby="dataTable_info">
-                    <table class="table table-sm dataTable my-0" id="dataTable">
-                        <thead>
-                            <tr>
-                                <th><label for="allinputs2" style="margin:0"> <input type="checkbox" 
-                                            class="allinputs" id='allinputs2'> Use</label></th>
-                                <th>Port #</th>
-                                <th>Step #</th>
-                                <td></td>
-                                <th>Test</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                             <tbody>
-                            {{#each pca9685_B}}
-                            <tr{{#if_neq this null }} class="table-active"{{/if_neq}}>
-                                <td><input type="checkbox" class="form-control"  {{#if_neq this null }}checked{{/if_neq}}></td>
-                                <td>{{inc @key}}</td>
-                                <td><input class="bg-dark border rounded {{#if_eq this null }}border-dark{{/if_eq}}{{#if_neq this null }}border-primary{{/if_neq}} form-control-sm" type="number" name="pca9685_B[1_{{ @key }}]" {{#if_eq this null }}disabled="disabled"{{/if_eq}} style="color: #b1b1b1;width: 60px;" {{#if_neq this null }}value="{{ this }}" {{/if_neq}}></td>
-                                <td> <button class='btn btn-sm btn-outline-success' data-identify><i class='fa fa-lightbulb'></i></button>   </td>
-                                <td><input class="custom-range" type="range" value="0" min="0" max="4095" data-number="{{@key}}" ><br></td>
-                            </tr>
-                            {{/each}}
-                        </tbody>
-                        <tfoot>
-                            <tr></tr>
-                        </tfoot>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 </form>
 
 <script>
-    $(document).ready(function ($) {
-        console.log("init");
-        console.log($(".pca9685"));
+    /**
+     * Controls a single PCA9685 LED driver interface
+     */
+    class DriverController {
+        /**
+         * @param {HTMLElement} driverElement - The root element for this driver's UI
+         * @param {WebSocket} socket - WebSocket connection for sending PWM commands
+         */
+        constructor(driverElement, socket) {
+            this.element = $(driverElement);
+            this.driverId = this.element.data('driver');
+            this.linkSliders = this.element.find('.linksliders');
+            this.socket = socket;
+            
+            this.rows = this.element.find('tbody tr').map((_, row) => ({
+                element: $(row),
+                checkbox: $(row).find('input[type=checkbox]').first(),
+                slider: $(row).find('input[type=range]'),
+                testButton: $(row).find('button[data-identify]'),
+                input: $(row).find('input[type=number]')
+            })).get();
+            
+            this.lastUpdate = 0;
+            this.THROTTLE_MS = 12;
+            
+            this.isDragging = false;
+            this.dragStartRow = null;
+            
+            this.initializeEvents();
+        }
 
-        let slidersLinked = false;
+        initializeEvents() {
+            this.element.on('input', 'input[type=range]', (e) => this.handleBrightnessChange(e));
+            this.element.on('click', 'button[data-identify]', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.handleTestLight(e);
+            });
+            this.element.on('change', '.enable-all', (e) => this.handleEnableAll(e));
+            this.element.on('change', 'tbody tr input[type=checkbox]', (e) => this.handleCheckboxChange(e));
 
-        $(".linksliders").on("change", function () {
-            slidersLinked = this.checked;
-        })
+            // Add click handler for rows
+            this.element.on('click', 'tbody tr', (e) => {
+                // Ignore if clicked on checkbox, button, or slider
+                if ($(e.target).is('input, button') || $(e.target).closest('button').length) {
+                    return;
+                }
+                
+                const row = this.rows.find(r => r.element[0] === e.currentTarget);
+                if (row && !row.checkbox.is(':checked')) {
+                    row.checkbox.prop('checked', true).trigger('change');
+                }
+            });
 
-        $(".allinputs").on("change", function () {
-            let on = this.checked;
-            let targets = $(this).closest(".card").find(on ? "input[type=checkbox]:not(:checked)" : "input[type=checkbox]:checked");
-            targets.click();
-        });
+            // Add drag handlers
+            this.element.on('mousedown', 'tbody tr', (e) => {
+                // Ignore if clicked on checkbox, button, or slider
+                if ($(e.target).is('input, button') || $(e.target).closest('button').length) {
+                    return;
+                }
+                
+                this.isDragging = true;
+                this.dragStartRow = $(e.currentTarget);
+            });
 
-        $(document).on("click", "button[data-identify]", function() {
-            var range = $(this).closest("tr").find("input[type=range]");
-            console.log("Clicky!", range);
-            clearInterval(range[0].interval);
-            range[0].interval = setInterval(function() {
-                animateUp(range);
-            }, 1);
-            return false;   
-        });
+            $(document).on('mousemove', (e) => {
+                if (!this.isDragging) return;
 
-        function animateUp(what) {
-            console.log("Animate up: ", what.val());
-            if(parseInt(what.val()) < 4095) {
-                what.val(parseInt(what.val()) +50);
-                brightnessChange.call(what[0]);
-            } else {
-                clearInterval(what[0].interval);
-                what[0].interval = setInterval(function() {
-                    animateDown(what);
-                }, 1);
+                // Find row under cursor
+                const row = $(document.elementFromPoint(e.clientX, e.clientY)).closest('tr');
+                if (row.length && row.closest('.pca9685')[0] === this.element[0]) {
+                    const rowData = this.rows.find(r => r.element[0] === row[0]);
+                    if (rowData && !rowData.checkbox.is(':checked')) {
+                        rowData.checkbox.prop('checked', true).trigger('change');
+                    }
+                }
+            });
+
+            $(document).on('mouseup', () => {
+                this.isDragging = false;
+                this.dragStartRow = null;
+            });
+        }
+
+        isLinked() {
+            return this.linkSliders.is(':checked');
+        }
+
+        getEnabledRows() {
+            return this.rows.filter(row => row.checkbox.is(':checked'));
+        }
+
+        getEnabledPorts() {
+            return this.getEnabledRows().map(row => row.slider.data('port'));
+        }
+
+        setBrightness(brightness) {
+            // Don't filter by checkbox state for brightness control
+            const ports = this.getSelectedPorts();
+            if (ports.length) {
+                this.getSelectedSliders().forEach(slider => slider.val(brightness));
+                this.socket.send(`setPWM|${this.driverId}|${ports.join(',')}|${brightness}`);
             }
         }
 
-        function animateDown(what) {  
-            if (parseInt(what.val()) > 1) {
-                what.val(parseInt(what.val()) - 50);
-                brightnessChange.call(what[0]);
+        // For PWM/testing - don't check checkbox state
+        getSelectedPorts() {
+            return this.rows
+                .filter(row => this.isLinked() || row.slider.data('selected'))
+                .map(row => row.slider.data('port'));
+        }
+
+        getSelectedSliders() {
+            return this.rows
+                .filter(row => this.isLinked() || row.slider.data('selected'))
+                .map(row => row.slider);
+        }
+
+        handleBrightnessChange(event) {
+            const now = Date.now();
+            if (now - this.lastUpdate < this.THROTTLE_MS) {
+                setTimeout(() => {
+                    this.handleBrightnessChange.call(this, event);
+                }, this.THROTTLE_MS - (now - this.lastUpdate));
+                return;
+            }
+            this.lastUpdate = now;
+
+            const brightness = parseInt($(event.target).val());
+            
+            if (this.isLinked()) {
+                this.manager.updateLinkedBrightness(brightness, this);
             } else {
-                clearInterval(what[0].interval);
+                // Handle single slider change
+                const port = $(event.target).data('port');
+                this.socket.send(`setPWM|${this.driverId}|${port}|${brightness}`);
             }
         }
 
-        window.allSliders = $("input[type=range]");
+        handleTestLight(event) {
+            const clickedRow = this.rows.find(row => 
+                row.testButton[0] === event.target || row.testButton.find(event.target).length
+            );
+            
+            if (!clickedRow) return;
 
-        function brightnessChange(e) {
-            let brightness = $(this).val();
-            if (slidersLinked) {
-                allSliders.val(brightness);
-                $(".pca9685").map(function (idx, el) {
-                    let ports = [];
-                    let i2c = $(el).find(".i2caddress").val();
-                    $(el).find(".table-active input[type=range]")
-                        .map(function (idx, el) {
-                            ports.push($(el).data("number"));
-                        });
-                    socket.send(`setPWM|${i2c}|${ports.join(",")}|${brightness}`);
-                })
+            // Only check enabled status if we're in linked mode
+            if (this.isLinked() && !clickedRow.checkbox.is(':checked')) return;
 
+            const range = clickedRow.slider;
+            clearInterval(range.data('interval'));
+            
+            let goingUp = true;
+            const interval = setInterval(() => {
+                const val = parseInt(range.val());
+                if (goingUp) {
+                    if (val < 4095) {
+                        const newVal = val + 100;
+                        if (this.isLinked()) {
+                            this.manager.updateLinkedBrightness(newVal, this);
+                        } else {
+                            range.val(newVal).trigger('input');
+                        }
+                    } else {
+                        goingUp = false;
+                    }
+                } else {
+                    if (val > 0) {
+                        const newVal = val - 50;
+                        if (this.isLinked()) {
+                            this.manager.updateLinkedBrightness(newVal, this);
+                        } else {
+                            range.val(newVal).trigger('input');
+                        }
+                    } else {
+                        clearInterval(interval);
+                    }
+                }
+            }, this.THROTTLE_MS);
+            
+            range.data('interval', interval);
+        }
+
+        handleEnableAll(event) {
+            const checked = event.target.checked;
+            this.rows.forEach(row => {
+                if (row.checkbox.is(':checked') !== checked) {
+                    row.checkbox.prop('checked', checked).trigger('change');
+                }
+            });
+        }
+
+        handleCheckboxChange(event) {
+            const row = this.rows.find(r => r.checkbox[0] === event.target);
+            if (!row) return;
+
+            const active = event.target.checked;
+            
+            row.element.toggleClass('table-active', active);
+            
+            if (active) {
+                const nextStep = this.manager.getNextStepNumber();
+                row.input
+                    .val(nextStep)
+                    .removeClass('border-dark')
+                    .addClass('border-primary')
+                    .prop('disabled', false)
+                    .attr('data-pin', row.slider.data('port'))
+                    .attr('data-driver', this.driverId);
             } else {
-                let parent = $(this).closest(".pca9685");
-                let i2c = $(parent).find(".i2caddress").val();
-                let port = $(this).data("number");
-                socket.send(`setPWM|${i2c}|${port}|${brightness}`);
-
+                row.input
+                    .val('')
+                    .removeClass('border-primary')
+                    .addClass('border-dark')
+                    .prop('disabled', true)
+                    .removeAttr('data-pin')
+                    .removeAttr('data-driver');
             }
-
         }
 
-        $(".pca9685").on("input", "input[type=range]", $.debounce(10, brightnessChange));
-
-        $(".pca9685").on("change", "input[type=checkbox]", rowChecked)
-
-
-    });
-
-    function rowChecked(e) {
-        let active = $(e.target)[0].checked;
-        let row = $(e.target).closest("tr");
-        row.toggleClass("table-active", active);
-        let num = row.find("input[type=number]");
-        if (!active) {
-            num.val('');
-            num.removeClass("border-primary");
-            num.addClass("border-dark");
-            row.find("input:not([type=checkbox])").attr("disabled", "disabled");
-        } else {
-            num.val($('.table-active').length);
-            num.addClass("border-primary");
-            num.removeClass("border-dark");
-            row.find("input:not([type=checkbox])").removeAttr("disabled");
+        setManager(manager) {
+            this.manager = manager;
         }
-        return false;
     }
 
-    
+    /**
+     * Manages all PCA9685 LED drivers and their interactions
+     */
+    class DriverManager {
+        /**
+         * @param {WebSocket} socket - WebSocket connection for sending PWM commands
+         */
+        constructor(socket) {
+            this.socket = socket;
+            this.drivers = new Map();
+            this.initialize();
+        }
 
+        initialize() {
+            $('.pca9685').each((_, element) => {
+                const driver = new DriverController(element, this.socket);
+                driver.setManager(this);
+                this.drivers.set(driver.driverId, driver);
+            });
+        }
+
+        /**
+         * Update brightness for all linked drivers
+         * @param {number} brightness - New brightness value
+         * @param {DriverController} source - Driver that initiated the change
+         */
+        updateLinkedBrightness(brightness, source) {
+            this.drivers.forEach(driver => {
+                if (driver.isLinked()) {
+                    driver.setBrightness(brightness);
+                }
+            });
+        }
+
+        /**
+         * Get the next available step number across all drivers
+         * @returns {number} Next available step number
+         */
+        getNextStepNumber() {
+            let maxStep = 0;
+            this.drivers.forEach(driver => {
+                driver.rows.forEach(row => {
+                    if (row.checkbox.is(':checked')) {
+                        const stepNum = parseInt(row.input.val());
+                        if (!isNaN(stepNum) && stepNum > maxStep) {
+                            maxStep = stepNum;
+                        }
+                    }
+                });
+            });
+            return maxStep === 0 ? 1 : maxStep + 1;
+        }
+    }
+
+    $(document).ready(function() {
+        const socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}`);
+        socket.addEventListener('open', () => {
+            console.log("🔌 WebSocket connected");
+            new DriverManager(socket);
+        });
+
+        $('form').on('submit', function(e) {
+            e.preventDefault();
+            
+            const mappings = [];
+            
+            // Collect ALL enabled inputs across ALL drivers
+            $('.pca9685').each(function() {
+                const driverId = $(this).data('driver');
+                
+                // Find all enabled inputs within this driver
+                $(this).find('input[type=number]:enabled').each(function() {
+                    const $input = $(this);
+                    const pin = parseInt($input.closest('tr').find('td:eq(1)').text());  // Get pin from the # column
+                    const step = parseInt($input.val());
+                    
+                    if (!isNaN(pin) && !isNaN(step) && driverId) {
+                        mappings.push({
+                            driver: driverId,
+                            pin: pin,
+                            step: step
+                        });
+                    }
+                });
+            });
+            
+            // Only submit if we have valid mappings
+            if (mappings.length > 0) {
+                // Sort by step number
+                mappings.sort((a, b) => a.step - b.step);
+                
+                fetch('/pca9685', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ mappings })
+                }).then(() => window.location.reload());
+            }
+        });
+    });
 </script>
+
+<style>
+    .table td, .table th {
+        vertical-align: middle; /* Align content vertically */
+        padding: 8px; /* Consistent padding */
+    }
+    .custom-range {
+        width: 100%; /* Ensure sliders take full width */
+    }
+</style>

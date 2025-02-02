@@ -11,10 +11,10 @@ class LedstripAnimation {
      * Constructor: initializes the internal timeline and attaches the PinMapper
      * @param {PinMapper} mapper PinMapper instance for PCA9685 pin mapping
      */
-    constructor(mapper, easingFunction = this.defaultEasing) {
+    constructor(mapper, easingFunction = 'defaultEasing') {
         this.mapper = mapper;
         this.timeline = new TimeLine();
-        this.easingFunction = easingFunction; // Add easing function property
+        this.easingFunction = easingFunction;
         this.started = false;
         this.startTime = null;
         this.currentTime = null;
@@ -22,97 +22,73 @@ class LedstripAnimation {
         this.boundLoop = null;
         this.loopInfinite = false;
         this.looper = null;
+        this.brightnessCompensation = 1; // Add default brightness compensation
+    }
+    // Default easing function (now using smooth elastic)
+    static defaultEasing(t) {
+        return LedstripAnimation.easeInBounce(t);
     }
 
-    // Default easing function (linear)
-    defaultEasing(t) {
-        return this.easeInOutQuad(t);
+    static linear(t) {
+        return t;
     }
 
-    // Easing functions
-    static easeInQuad(t) {
-        return t * t;
+    // New set of easing functions with more dynamic movement
+    static easeInBack(t) {
+        const s = 1.70158;
+        return t * t * ((s + 1) * t - s);
     }
 
-    static easeOutQuad(t) {
-        return t * (2 - t);
+    static easeOutBack(t) {
+        const s = 1.70158;
+        return (t -= 1) * t * ((s + 1) * t + s) + 1;
     }
 
-    static easeInOutQuad(t) {
-        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    static easeInOutBack(t) {
+        const s = 1.70158 * 1.525;
+        if ((t *= 2) < 1) return 0.5 * (t * t * ((s + 1) * t - s));
+        return 0.5 * ((t -= 2) * t * ((s + 1) * t + s) + 2);
     }
 
-    static easeInCubic(t) {
-        return t * t * t;
+    static easeInElastic(t) {
+        return Math.sin(5.5 * t * Math.PI) * Math.pow(2, 10 * (t - 1));
     }
 
-    static easeOutCubic(t) {
-        return (--t) * t * t + 1;
+    static easeOutElastic(t) {
+        return Math.sin(-5.5 * t * Math.PI) * Math.pow(2, -10 * t) + 1;
     }
 
-    static easeInOutCubic(t) {
-        return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    static easeInOutElastic(t) {
+        if (t < 0.5) return 0.5 * Math.sin(11 * Math.PI * t) * Math.pow(2, 10 * (2 * t - 1));
+        return 0.5 * (Math.sin(-11 * Math.PI * t) * Math.pow(2, -10 * (2 * t - 1)) + 2);
     }
 
-    static easeInQuart(t) {
-        return t * t * t * t;
+    static easeInBounce(t) {
+        return 1 - LedstripAnimation.easeOutBounce(1 - t);
     }
 
-    static easeOutQuart(t) {
-        return 1 - (--t) * t * t * t;
+    static easeOutBounce(t) {
+        if (t < 1 / 2.75) {
+            return 7.5625 * t * t;
+        } else if (t < 2 / 2.75) {
+            return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+        } else if (t < 2.5 / 2.75) {
+            return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+        } else {
+            return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+        }
     }
 
-    static easeInOutQuart(t) {
-        return t < 0.5 ? 8 * t * t * t * t : 1 - 8 * (--t) * t * t * t;
-    }
-
-    static easeInQuint(t) {
-        return t * t * t * t * t;
-    }
-
-    static easeOutQuint(t) {
-        return 1 + (--t) * t * t * t * t;
-    }
-
-    static easeInOutQuint(t) {
-        return t < 0.5 ? 16 * t * t * t * t * t : 1 + 16 * (--t) * t * t * t * t;
-    }
-
-    static easeInExpo(t) {
-        return t === 0 ? 0 : Math.pow(2, 10 * (t - 1));
-    }
-
-    static easeOutExpo(t) {
-        return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
-    }
-
-    static easeInOutExpo(t) {
-        if (t === 0) return 0;
-        if (t === 1) return 1;
-        return t < 0.5 ? 0.5 * Math.pow(2, 20 * t - 10) : 1 - 0.5 * Math.pow(2, -20 * t + 10);
-    }
-
-    static easeInCirc(t) {
-        return 1 - Math.sqrt(1 - t * t);
-    }
-
-    static easeOutCirc(t) {
-        return Math.sqrt(1 - (--t) * t);
-    }
-
-    static easeInOutCirc(t) {
-        return t < 0.5 ? (1 - Math.sqrt(1 - 4 * t * t)) / 2 : (Math.sqrt(1 - (-2 * t + 2) * (-2 * t + 2)) + 1) / 2;
+    static easeInOutBounce(t) {
+        return t < 0.5
+            ? LedstripAnimation.easeInBounce(t * 2) * 0.5
+            : LedstripAnimation.easeOutBounce(t * 2 - 1) * 0.5 + 0.5;
     }
 
     // Compensate for LED brightness threshold
-    compensateBrightness(value) {
-        const threshold = 200; // Example threshold value
-        const maxBrightness = 4095; // Max PWM value
-        if (value < threshold) {
-            return Math.round((value / threshold) * maxBrightness); // Scale below threshold
-        } else {
-            return Math.round(maxBrightness * (1 - Math.pow((1 - (value - threshold) / (maxBrightness - threshold)), 2))); // Non-linear scaling above threshold
-        }
+    compensateBrightness(brightness) {
+        // Just pass through the brightness value - no compensation needed
+        return Math.min(Math.max(Math.round(brightness), 0), 4095);
     }
 
     /**
@@ -147,17 +123,29 @@ class LedstripAnimation {
      * @return void
      */
      loop() {
-
         this.currentTime = Date.now();
         this.timeline.setCurrentPosition(this.currentTime);
         let items = this.timeline.getActiveItems();
+        
 
         for (let item of items) {
-            let easedProgress = this.easingFunction(item.progress / 100); // Apply easing
-            let pins = item.render(easedProgress); // Pass eased progress to render
+            let easedProgress = LedstripAnimation[this.easingFunction](item.progress / 100);
+            let pins = item.render(easedProgress);
+            
+
             for (let pin in pins) {
-                let compensatedBrightness = this.compensateBrightness(parseInt(pins[pin]));
-                this.mapper.setBrightness(parseInt(pin), compensatedBrightness);
+                let brightness = parseInt(pins[pin]);
+                if (isNaN(brightness)) {
+                    console.log('NaN brightness detected:', {
+                        easedProgress,
+                        pins,
+                        rawPinValue: pins[pin],
+                        pin
+                    });
+                    debugger; // Break on first NaN
+                    break;
+                }
+                this.mapper.setBrightness(parseInt(pin), brightness);
             }
         }
 
@@ -216,10 +204,13 @@ class LedstripAnimation {
     /**
      * Set animation timing options.
      * @param {Object} options - Animation options including timing.
+     * @return {LedstripAnimation} fluent interface
      */
-    setAnimationTiming(options) {
-        this.animationTiming = options;
+    setEasingFunction(easingFunction) {
+        this.easingFunction = easingFunction;
+        return this;
     }
+
 }
 
 export default LedstripAnimation;

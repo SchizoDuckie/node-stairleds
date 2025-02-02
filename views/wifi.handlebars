@@ -1,10 +1,9 @@
-<h3 class="text-dark mb-4">Wifi Settings</h3>
+<h3 class="mb-4">Wifi Settings</h3>
 <div class="row mb-3">
     <div class="col-lg-4">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="text-primary font-weight-bold m-0">Nearby Access Points</h6>
-
+                <h6 class="text-primary m-0">Nearby Access Points</h6>
             </div>
             <div class="card-body" id="networks">
                 {{#if accessPoints}}
@@ -37,45 +36,43 @@
             <div class="col">
                 <div class="card shadow mb-3">
                     <div class="card-header py-3">
-                        <p class="text-primary m-0 font-weight-bold">Access Point Settings</p>
+                        <p class="text-primary m-0">Access Point Settings</p>
                     </div>
                     <div class="card-body">
-                        <form>
-                            <div class="form-row">
-                                <div class=" col-md-6">
-                                    <div class="form-group">
-                                        <label for="username"><strong>AP
-                                            Name</strong>
-                                        </label>
-                                        <input class="form-control" type="text" placeholder="select an access point" name="apname" value="{{apName}}">
+                        <form id="access-point-form">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="apname" class="form-label"><strong>AP Name</strong></label>
+                                        <input class="form-control" type="text" id="apname" placeholder="select an access point" name="apname" value="{{apName}}">
                                     </div>
                                 </div>
-                                <div class=" col-md-6">
-                                    <div class="form-group">
-                                        <label for="email">
-                                            <strong>Password</strong>
-                                        </label>
-                                        <input class="form-control" type="password" placeholder="******" name="password" value="{{apPassword}}">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label"><strong>Password</strong></label>
+                                        <input class="form-control" type="password" id="password" placeholder="******" name="password" value="{{apPassword}}">
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <button class="btn btn-primary btn-sm" type="submit">Save Settings</button>
+                            <div class="mb-3">
+                                <button class="btn btn-primary" type="submit">Save Settings</button>
                             </div>
                         </form>
                     </div>
                 </div>
                 <div class="card shadow">
                     <div class="card-header py-3">
-                        <p class="text-primary m-0 font-weight-bold">Additional Settings</p>
+                        <p class="text-primary m-0">Additional Settings</p>
                     </div>
                     <div class="card-body">
-                        <form>
-                            <div class="form-group"><label for="address"><strong>Hostname</strong></label><input
-                                    class="form-control" type="text" placeholder="stairleds" name="hostname">
+                        <form id="additional-settings-form">
+                            <div class="mb-3">
+                                <label for="hostname" class="form-label"><strong>Hostname</strong></label>
+                                <input class="form-control" type="text" id="hostname" placeholder="stairleds" name="hostname">
                             </div>
-                            <div class="form-group"><button class="btn btn-primary btn-sm"
-                                                            type="submit">Save&nbsp;Settings</button></div>
+                            <div class="mb-3">
+                                <button class="btn btn-primary" type="submit">Save Settings</button>
+                            </div>
                         </form>
                     </div>
                 </div>

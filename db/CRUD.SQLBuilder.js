@@ -206,9 +206,22 @@ class SQLBuilder {
     getCount() {
         try {
             const where = this.wheres.length > 0 ? ' WHERE ' + this.wheres.join(" \n AND \n\t") : '';
-            const group = this.groups.length > 0 ? ' GROUP BY ' + this.groups.join(", ") : '';
             const join = this.joins.join("\n ");
-            return `SELECT count(*)\n FROM \n\t${this.entityConfig.table}\n ${join}${where}${group}`;
+            const group = this.groups.length > 0 ? ' GROUP BY ' + this.groups.join(", ") : '';
+            
+            let query;
+            if (this.groups.length > 0) {
+                // If we have a GROUP BY clause, we need to count the number of groups
+                query = `SELECT COUNT(*) as count FROM (SELECT 1 FROM \n\t${this.entityConfig.table}\n ${join}${where}${group}) as subquery`;
+            } else {
+                // If no GROUP BY, we can use a simple COUNT(*)
+                query = `SELECT COUNT(*) as count\n FROM \n\t${this.entityConfig.table}\n ${join}${where}`;
+            }
+            
+            return {
+                query,
+                parameters: this.parameters
+            };
         } catch (error) {
             console.error("Error constructing count query:", error);
             throw new Error(`Error in getCount: ${error.message}`);

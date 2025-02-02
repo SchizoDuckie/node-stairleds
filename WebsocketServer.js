@@ -1,74 +1,157 @@
 import WebSocket from 'ws';
-
-const WEBSOCKET_DEFAULT_PORT = 8000;
+import http from 'http';
 
 class WebsocketServer {
     constructor() {
-        this.websocket = null;
-        this.port = WEBSOCKET_DEFAULT_PORT;
-        this.clients = [];
-        this.handlers = {};
+        this.wss = null;
+        this.clients = new Set();
+        this.handlers = new Map();
+        this.isStarted = false;
     }
 
-    onPageRequest(req, res) {
-        console.log("Page request!", req, res);
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.end("No.");
-    }
-    
-    setPort(port) {
-        this.port = port;
-        return this;
+    /**
+     * Starts the WebSocket server
+     * @param {http.Server} server - The HTTP server instance to attach to
+     * @returns {WebsocketServer} - Returns this instance for method chaining
+     * @throws {Error} If server is already started or invalid server instance
+     */
+    start(server) {
+        if (this.isStarted) {
+            console.warn('WebSocket server is already running');
+            return this;
+        }
+
+        if (!(server instanceof http.Server)) {
+            throw new Error('Invalid server instance provided');
+        }
+
+        try {
+            this.wss = new WebSocket.Server({ 
+                server,
+                clientTracking: true,
+                noServer: false
+            });
+
+            this.wss.on('connection', this.handleConnection.bind(this));
+            this.wss.on('error', this.handleError.bind(this));
+            
+            this.isStarted = true;
+
+            console.log('⚡ WebSocket server started');
+
+            return this;
+        } catch (error) {
+            eventBus.system('error', 'Failed to start WebSocket server', error);
+            throw error;
+        }
     }
 
-    start() {
-        console.log("Starting websocket server on "+this.port);
-
-        this.websocket = new WebSocket.Server({
-            port: this.port
-        });
-        this.websocket.on('connection', this.handleConnection.bind(this));
-        return this;
+    /**
+     * Handles WebSocket server errors
+     * @private
+     * @param {Error} error - The error that occurred
+     */
+    handleError(error) {
+        console.trace('WebSocket server error:', error);
     }
 
     handleConnection(ws) {
-        this.clients.push(ws);
-        ws.on('message', function(msg) {
-            this.handleMessage(msg, ws);
-        }.bind(this));
-        ws.on('close', function(evt) {
-          var x = this.clients.indexOf(ws);
-          if (x > -1) {
-            this.clients.splice(x, 1);
-          }
-        }.bind(this));
+        this.clients.add(ws);
+        ws.on('message', (msg) => this.handleMessage(msg, ws));
+        ws.on('close', () => this.clients.delete(ws));
     }
 
     addHandler(topic, handler) {
-        this.handlers[topic] = handler;
+        this.handlers.set(topic, handler);
         return this;
     }
 
+    getWebSocketServer() {
+        return this.wss;
+    }
+
     handleMessage(msg, client) {
-        //console.log("[WS incoming message] ", msg);
-        var topic = msg,
-            args = [];
-        if(msg.indexOf('|') > -1) {
-            args = msg.split('|');
-            topic = args.shift();
+        const startTime = performance.now();
+        const messages = msg.toString().split('\n');
+        console.log(`📥 Processing batch of ${messages.length} messages`);
+        
+        // Pre-allocate array with known size for better performance
+        const responses = new Array();
+        
+        // Use for...of instead of forEach for better performance with break/continue
+        for (const message of messages) {
+            // Skip empty messages
+            if (!message.trim()) continue;
+            
+            // Destructure only once, using split with limit for efficiency
+            const [topic, ...args] = message.split('|');
+            const handler = this.handlers.get(topic);
+            
+            if (handler) {
+                try {
+                    const response = handler(...args);
+                    if (response) responses.push(response);
+                } catch (error) {
+                    console.error(`❌ Error handling message '${topic}':`, error);
+                    responses.push(`error|${topic}|${error.message}`);
+                }
+            } else {
+                console.warn(`⚠️ Unknown topic '${topic}'. Available: ${[...this.handlers.keys()].join(', ')}`);
+            }
         }
-        var response = '?';
-        if (topic in this.handlers) {
-            response = this.handlers[topic].apply(null, args);
-         //   console.log(`Sending response via ${topic} handler: ${response}.`);
-        } else {
-            console.log(`Unkown websocket message came in: ${topic}. Available handlers: ${Object.keys(this.handlers)}`);
+        
+        // Send all responses in a single message if there are any
+        if (responses.length > 0) {
+            client.send(responses.join('\n'));
+            console.log(`📤 Sent ${responses.length} responses`);
         }
-       
-        if(response && response.length) {
-            client.send(response);
+        
+        const duration = performance.now() - startTime;
+        console.log(`⚡ Processed batch in ${duration.toFixed(2)}ms (${(messages.length / duration * 1000).toFixed(2)} msgs/sec)`);
+    }
+    
+    broadcast(message) {
+        this.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(message);
+            }
+        });
+    }
+
+    async stop() {
+        if (!this.isStarted) {
+            return;
         }
-       
+
+        try {
+            // Close all client connections
+            for (const client of this.clients) {
+                client.terminate();
+            }
+            this.clients.clear();
+
+            // Close the server
+            await this.closeServer();
+
+            this.isStarted = false;
+            this.wss = null;
+            console.log('WebSocket server stopped');
+        } catch (error) {
+            eventBus.system('error', 'Error stopping WebSocket server:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Closes the WebSocket server gracefully
+     * @private
+     * @returns {Promise<void>} Resolves when the server is closed
+     * @throws {Error} If there's an error closing the server
+     */
+    async closeServer() {
+        return new Promise((resolve, reject) => {
+            this.wss.close(err => err ? reject(err) : resolve());
+        });
     }
 }
 

@@ -1,40 +1,58 @@
-import TimelineAnimation from  './TimelineAnimation.js';
+import TimelineAnimation from './TimelineAnimation.js';
+
 /**
  * 'Immediate' Animation.
  * Sets led brightness to target brightness without fade
- * 
  */
 class Immediate extends TimelineAnimation {
+
     
     /**
-     * Options: `Object{}` with these mandatory properties
-     * - brightness `int[0-4095]` end brightness
-     * - leds: `array` led numbers to fade in
-     * @param {Object} options 
+     * Defines validation rules for Immediate animation
+     * @returns {Object} Validation configuration
+     */
+    static getValidationRules() {
+        return {
+            required: ['leds', 'brightness'],
+            types: {
+                leds: 'array',
+                brightness: 'number'
+            },
+            ranges: {
+                brightness: { min: 0, max: 4095 }
+            }
+        };
+    }
+
+    
+    /**
+     * @param {Object} options
+     * @param {number} options.brightness - Target brightness [0-4095]
+     * @param {number[]} options.leds - LED numbers to set
+     * @param {number} [options.duration=50] - Animation duration in ms
+     * @throws {Error} When required options are missing or invalid
      */
     constructor(options) {
-         super(options) ;
-         this.done = false;
-         this.duration = 50; // Fixed duration for immediate effect
+        // Validation handled by parent class using our validation rules
+        super({
+            ...options,
+            duration: 50 // Fixed duration for immediate effect
+        });
+        
+        this.done = false;
     }
+
 
     /**
-     * Fixed duration: 50ms to be able to trigger on a timeline
+     * Renders the current animation frame
+     * @returns {Object} LED states for this frame
      */
-    calculateDuration() {
-        return 50;
-    }
-
     render() {
-        var output = {};
-        if(this.done) {
-             return output;
+        const output = {};
+        for (const led of this.options.leds) {
+            output[led] = this.options.brightness;
         }
-        for(var i=0; i< this.options.leds.length; i++) {
-            output[this.options.leds[i]] = this.options.brightness;
-        }
-        this.done = true;
-       return output;
+        return output;
     }
 }
 

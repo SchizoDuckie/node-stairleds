@@ -1,55 +1,61 @@
-import TimelineAnimation from  './TimelineAnimation.js';
+import TimelineAnimation from './TimelineAnimation.js';
 
 /**
  * A Fade To Animation.
- * Fades led numbers passed in `options.leds[]` from their current brightness to `options.brightness`
+ * Fades all LEDs to target brightness
  */
 class FadeTo extends TimelineAnimation {
 
-    
     /**
-     * Options: `Object{}` with these mandatory properties
-     * - brightness `int[0-4095]` end brightness
-     * - duration: `int` duration in ms it takes to animate the leds at once
-     * - mapper: `LedMapper` an instance of the PinMapper class to find current pin brightnesses from  
-     * - leds: `array` led numbers to fade
-     * @param {Object} options 
+     * Defines validation rules for FadeTo animation
+     * @returns {Object} Validation configuration
+     */
+    static getValidationRules() {
+        return {
+            required: ['duration', 'leds', 'brightness'],
+            types: {
+                duration: 'number',
+                leds: 'array',
+                brightness: 'number'
+            },
+            ranges: {
+                duration: { min: 0 },
+                brightness: { min: 0, max: 4095 }
+            }
+        };
+    }
+
+    /**
+     * @param {Object} options
+     * @param {number} options.brightness - Target brightness [0-4095]
+     * @param {number} options.duration - Animation duration in ms
+     * @param {number[]} options.leds - LED numbers to fade
+     * @throws {Error} When required options are missing or invalid
      */
     constructor(options) {
         super(options);
-        if(!('brightness' in this.options)) {
-            throw new Error("mandatory option brightness is missing!");
-        }
-        if(!this.options.mapper) {
-            throw new Error("mandatory option mapper is missing!");
-        }
-        this.leds = options.leds;
-        this.brightnesses = {};
-        this.duration = options.duration || this.duration; // Set duration from options
+        this.startBrightness = {};
     }
 
-    onStart() {
-        for(var i= 0; i< this.options.leds.length; i++) {
-            this.brightnesses[this.options.leds[i]] = this.options.mapper.getBrightness(this.options.leds[i]);
-        }
-    }
-
+    /**
+     * Renders the current animation frame
+     * @returns {Object} LED states for this frame
+     */
     render() {
-        var output = {};
-        for(var i=0; i< this.options.leds.length; i++) {
-            var led = this.options.leds[i],
-                end = this.options.brightness,
-                start = this.brightnesses[led],
-                range = (start > end) ? start - end : end - start;
-
-            if (end > start) {
-                output[led] = start + ((range / 100) * this.progress);
-            } else {
-                output[led] = start - ((range / 100) * this.progress);
+        const output = {};
+        
+        for (const led of this.options.leds) {
+            if (this.startBrightness[led] === undefined) {
+                this.startBrightness[led] = this.options.mapper.getBrightness(led) || 0;
             }
+
+            const range = this.options.brightness - this.startBrightness[led];
+            const current = this.startBrightness[led] + ((range / 100) * this.progress);
+            output[led] = current;
         }
+
         return output;
-    } 
+    }
 }
 
 export default FadeTo;

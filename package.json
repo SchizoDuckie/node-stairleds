@@ -19,6 +19,7 @@
     "mustache": "^4.0.1",
     "nconf": "^0.11.3",
     "node-walker": "^0.1.0",
+    "nodemon": "^3.1.7",
     "onoff": "^5.0.1",
     "raspi-gpio": "^6.2.2",
     "serve-static": "^1.14.1",

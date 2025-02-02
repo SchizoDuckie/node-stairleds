@@ -27,10 +27,10 @@ class CRUD {
         CRUD.__statsListeners.push(listener);
     }
 
-    log() {
-        //if (CRUD.DEBUG) {
+    static log() {
+        if (CRUD.DEBUG) {
         console.log.apply(console, arguments);
-        //}
+        }
     }
 
 
@@ -63,7 +63,7 @@ class CRUD {
     if (!this.initialized) {
       await this._registerEntities();
       await this._registerAdapters();
-      console.log("Registered adapters: ", this.adapters, "requested: ", config.adapter);
+      
       this.EntityManager.setAdapter(new this.adapters[config.adapter](config.databaseName));
       this.initialized = true;
     }
@@ -85,7 +85,7 @@ class CRUD {
         try {
           // Simply importing the file should trigger the entity registration
           await import(modulePath);
-          console.log(`Processed entity file: ${file}`);
+          CRUD.log(`Processed entity file: ${file}`);
         } catch (error) {
           console.error(`Error processing entity file ${file}:`, error);
         }
@@ -93,7 +93,7 @@ class CRUD {
     }
 
     // Log the registered entities
-    console.log("Registered entities:", Object.keys(this.EntityManager.entities));
+    CRUD.log("Registered entities:", Object.keys(this.EntityManager.entities));
   }
 
 
@@ -113,7 +113,7 @@ class CRUD {
           const AdapterClass = AdapterModule.default;
           if (AdapterClass && AdapterClass.name) {
             this.adapters[AdapterClass.name] = AdapterClass;
-            console.log(`Registered adapter: ${AdapterClass.name}`);
+            CRUD.log(`Registered adapter: ${AdapterClass.name}`);
           } else {
             console.error(`Invalid adapter structure in ${file}. Expected a class with a static 'name' property.`);
           }
@@ -266,6 +266,37 @@ class CRUD {
     return obj;
   };
 
+  /**
+   * Counts the number of entities matching the given filters.
+   *
+   * @param {Function|string} obj - The entity constructor or entity name.
+   * @param {Object} filters - The filters to apply to the count query.
+   * @param {Object} options - Additional options for the query (optional).
+   * @returns {Promise<number>} A promise that resolves to the count of matching entities.
+   * @throws {Error} If the object type is invalid or if the count operation fails
+   */
+  async FindCount(obj, filters, options = {}) {
+    let type = this.getType(obj);
+    
+    try {
+      // Use the connection adapter directly to perform the count
+      const count = await this.EntityManager.connectionAdapter.Count(type, filters, options);
+      return count;
+    } catch (error) {
+      console.error(`Error counting ${type} entities:`, error);
+      throw error;
+    }
+  }
+
+  getType(obj) {
+    if (obj instanceof Entity || obj.prototype instanceof Entity) {
+      return obj.prototype.getType();
+    } else if (obj in this.EntityManager.entities) {
+      return obj;
+    } else {
+      throw new Error(`CRUD.FindCount cannot count non-CRUD objects like ${obj}!`);
+    }
+  }
 }
 
 const CRUDInstance = new CRUD();

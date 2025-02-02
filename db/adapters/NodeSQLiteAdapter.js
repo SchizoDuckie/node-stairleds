@@ -24,14 +24,13 @@ class NodeSQLiteAdapter extends ConnectionAdapter {
      * @param {string} databaseName - The name of the database to connect to.
      * @returns {Promise<boolean>} A promise that resolves to true if the connection was successful.
      */
-    connect(databaseName) {
+    async connect(databaseName) {
         return new Promise((resolve, reject) => {
             this.db = new sqlite3.Database(databaseName, (err) => {
                 if (err) {
                     console.error(`Error connecting to database ${databaseName}:`, err);
                     reject(err);
                 } else {
-                    console.log(`Connected to database ${databaseName}!`);
                     resolve(true);
                 }
             });
@@ -389,6 +388,26 @@ class NodeSQLiteAdapter extends ConnectionAdapter {
             });
         } else {
             return false;
+        }
+    }
+
+    /**
+     * Count records in the database.
+     * @param {string} entityName - The name of the entity to count.
+     * @param {Object} filters - The conditions for the query.
+     * @param {Object} options - Additional options for the query.
+     * @returns {Promise<number>} The count of matching records.
+     */
+    async Count(entityName, filters, options) {
+        const builder = new SQLBuilder(entityName, filters, options);
+        const queryData = builder.getCount();
+
+        try {
+            const result = await this.query(queryData.query, queryData.parameters);
+            return result[0].count;
+        } catch (error) {
+            console.error('SQL Error in COUNT:', error.message);
+            throw error;
         }
     }
 }

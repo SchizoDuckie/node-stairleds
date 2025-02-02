@@ -1,3 +1,7 @@
+/**
+ * Constants defining various animation states
+ * @enum {number}
+ */
 var STATES = {
   IDLE : 0,
   FADE_START: 1,
@@ -7,12 +11,20 @@ var STATES = {
   FINISHED: 16
 };
 
+/**
+ * Constants defining animation playback strategies
+ * @enum {number}
+ */
 var ANIM_STRATEGY = {
   ONE_AT_A_TIME: 1,
   ALL_AT_ONCE: 2,
   PROFILE: 4
 };
 
+/**
+ * Constants defining animation end/off strategies
+ * @enum {number}
+ */
 var ANIM_OFF_STRATEGY = {
   ALL_AT_ONCE: 1,
   SEQUENCE: 2,
@@ -74,20 +86,31 @@ class AnimationEngine {
     this.boundFadeStep = this.fadeStep.bind(this);
   }
 
+  /**
+   * Sets the strategy for how animations are played
+   * @param {number} strategy - The animation strategy to use from ANIM_STRATEGY enum
+   * @returns {AnimationEngine} For method chaining
+   */
   setAnimationStrategy(strategy) {
     this.ANIM_STRATEGY = strategy;
     return this;
   }
 
+  /**
+   * Sets the strategy for how animations are ended/turned off
+   * @param {number} strategy - The off animation strategy to use from ANIM_OFF_STRATEGY enum
+   * @returns {AnimationEngine} For method chaining
+   */
   setOffAnimationStrategy(strategy) {
     this.ANIM_OFF_STRATEGY = strategy;
     return this;
   }
 
   /**
-   * Sets brightness on a mapped pin by number.
-   * @param int pin 
-   * @param int brightness (0-4095)
+   * Sets brightness on a mapped pin by number
+   * @param {number} pin - The pin number to set
+   * @param {number} brightness - Brightness value (0-4095)
+   * @returns {AnimationEngine} For method chaining
    */
   setBrightness(pin, brightness) {
     this.pinmapper.setBrightness(pin, brightness);
@@ -95,8 +118,9 @@ class AnimationEngine {
   }
 
   /**
-   * Pass the engine an animation.
-   * @param array anim of max brightness in percent 0-100
+   * Configures the animation sequence
+   * @param {Array<number>} anim - Array of brightness values in percent (0-100)
+   * @returns {AnimationEngine} For method chaining
    */
   setAnimation(anim) {
       this.animation = anim;
@@ -106,7 +130,10 @@ class AnimationEngine {
   }
 
   /**
-   * Should the brightness steps be shifting in circular order
+   * Configures whether brightness steps should shift in circular order
+   * @param {boolean} enabled - Whether shifting is enabled
+   * @param {number|boolean} steps - Number of steps to shift, or false for default
+   * @returns {AnimationEngine} For method chaining
    */
   setShifting(enabled, steps) {
     this.ANIM_SHIFTING = enabled;
@@ -115,7 +142,10 @@ class AnimationEngine {
   }
 
   /**
-   * Should the animation be looping. Default false. Repeats -1 for infinite
+   * Configures animation looping behavior
+   * @param {boolean} enabled - Whether looping is enabled
+   * @param {number|boolean} repeats - Number of repeats (-1 for infinite) or false for default
+   * @returns {AnimationEngine} For method chaining
    */
   setLooping(enabled, repeats) {
     this.ANIM_LOOPING = enabled;
@@ -124,7 +154,9 @@ class AnimationEngine {
   }
 
   /**
-   * Should the animation be bouncing. Default false
+   * Configures animation bouncing behavior
+   * @param {boolean} enabled - Whether bouncing is enabled
+   * @returns {AnimationEngine} For method chaining
    */
   setBouncing(enabled) {
     this.ANIM_BOUNCING = enabled;
@@ -132,7 +164,9 @@ class AnimationEngine {
   }
 
   /**
-   * Animation duration in ms for the total anmation
+   * Sets the total duration for the animation
+   * @param {number} duration - Duration in milliseconds
+   * @returns {AnimationEngine} For method chaining
    */
   setDuration( duration) {
     this.ANIM_DURATION = duration;
@@ -140,7 +174,8 @@ class AnimationEngine {
   }
 
   /**
-   * Start the animation
+   * Starts the animation sequence
+   * @returns {AnimationEngine} For method chaining
    */
   start() {
     this.startTime = Date.now();
@@ -153,7 +188,8 @@ class AnimationEngine {
   }
 
   /**
-   * Stop the animation
+   * Stops the animation sequence
+   * @returns {AnimationEngine} For method chaining
    */
   stop() {
     this.CURRENT_STATE = STATES.IDLE;
@@ -161,6 +197,9 @@ class AnimationEngine {
     return this;
   }
 
+  /**
+   * Clears all pins by setting their brightness to 0
+   */
   clear() {
     for(var i =0; i<= this.animation.length; i++) {
       this.setBrightness(i, 0);
@@ -168,6 +207,10 @@ class AnimationEngine {
   }
   
 
+  /**
+   * Main animation loop that handles state transitions and animation steps
+   * @private
+   */
   loop() {
     this.currentTime = Date.now();
     switch(this.CURRENT_STATE) {
@@ -218,11 +261,13 @@ class AnimationEngine {
   }
 
   /**
-   * Calculate the brightness for a position based on a current, min and max.
-   * @param {percentage} 0-100 position 
-   * @param {int} start 
-   * @param {int} end
-   * @return {int} 0-maxBrightness led brightness
+   * Calculates brightness for a given position in the animation
+   * @param {number} position - Current position (0-100)
+   * @param {number} pin - Pin number
+   * @param {number} minBrightness - Minimum brightness value
+   * @param {number} maxBrightness - Maximum brightness value
+   * @param {boolean} reverse - Whether to reverse the calculation
+   * @returns {number} Calculated brightness value
    */      
   getBrightnessForPosition(position, pin, minBrightness, maxBrightness, reverse) {
     if((pin in this.animation)) {
@@ -249,11 +294,13 @@ class AnimationEngine {
   }
 
     /**
-     * Calculate the brightness for a position based on a current, min and max.
-     * @param {percentage} 0-100 position 
-     * @param {int} start 
-     * @param {int} end
-     * @return {int} 0-maxBrightness led brightness
+     * Calculates brightness for a shifting position between two pins
+     * @param {number} position - Current position (0-100)
+     * @param {number} pin - Current pin number
+     * @param {number} minBrightness - Minimum brightness value
+     * @param {number} maxBrightness - Maximum brightness value
+     * @param {boolean} reverse - Whether to reverse the calculation
+     * @returns {number} Calculated brightness value for the shift position
      */
   getBrightnessForShiftPosition(position, pin, minBrightness, maxBrightness, reverse) {
       console.log("Brightness for shift position!", position, pin);
@@ -272,7 +319,8 @@ class AnimationEngine {
 
 
  /**
-   * Perform a step of the fade and progress to the next step if needed. 
+   * Performs a single step of the fade animation
+   * @private
    */
   fadeStep() {
     var currentPerc = this.getProgress();
@@ -289,7 +337,7 @@ class AnimationEngine {
       }
     } 
 
-    if(currentPerc == 100) {
+    if(currentPerc >= 100) {
       switch(this.CURRENT_STATE) {
         case STATES.FADE_START:
           this.CURRENT_STATE = STATES.RUNNING_START;
@@ -305,7 +353,9 @@ class AnimationEngine {
   }
 
  /**
-   * Calculate animation step progress as percentage
+   * Calculates current animation progress as percentage
+   * @returns {number} Progress percentage (0-100)
+   * @throws {Error} If ANIM_DURATION is not a valid number
    */
   getProgress() {
     if (!Number.isInteger(this.ANIM_DURATION)) {
@@ -324,6 +374,10 @@ class AnimationEngine {
   }
 
   
+  /**
+   * Performs a single step of the main animation
+   * @private
+   */
   step() {
     var currentPerc = this.getProgress();
     console.log("Animation progress: ", currentPerc);
@@ -432,7 +486,9 @@ class AnimationEngine {
 
 
   /**
-   * 
+   * Handles animation bouncing behavior
+   * @private
+   * @todo Implement bounce functionality
    */
   bounce() {
       /**

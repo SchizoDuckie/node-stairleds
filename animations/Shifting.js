@@ -5,33 +5,78 @@ import FadeTo from './FadeTo.js';
 /**
  * Shifting Animation.
  * Fades led numbers passed in `options.leds[]` from their current brightness to zero
- * and applies the current brightness to the next item over.
+ * and applies the current brightness to the next item over. Can shift up or down and
+ * optionally bounce between directions.
  */
 class Shifting extends TimelineAnimation { 
     
+     /**
+     * Defines validation rules for Shifting animation
+     * @returns {Object} Validation configuration object containing required fields, types, and ranges
+     */
+    static getValidationRules() {
+        return {
+            required: ['duration', 'leds', 'shifts'],
+            types: {
+                duration: 'number',
+                leds: 'array',
+                shifts: 'number',
+                direction: 'string',
+                bouncing: 'boolean',
+                bounceAfter: 'number'
+            },
+            ranges: {
+                duration: { min: 0 },
+                shifts: { min: 1 },
+                bounceAfter: { min: 0 },
+                leds: { minLength: 2 }
+            },
+            enums: {
+                direction: ['up', 'down']
+            }
+        };
+    }
+
     /**
-     * Options: `Object{}` with these mandatory properties
-     * - steps `int` steps to shift brightnesses for
-     * - duration: `int` duration in ms it takes to animate all the leds in sequence
-     * - mapper: `LedMapper` an instance of the PinMapper class to find current pin brightnesses from  
-     * - leds: `array` led numbers to fade in
-     * @param {Object} options 
+     * Creates a new Shifting animation
+     * @param {Object} options
+     * @param {number} options.shifts - Number of shifts to perform (min: 1)
+     * @param {number} options.duration - Total animation duration in ms
+     * @param {Object} options.mapper - LED mapper instance to find current pin brightnesses
+     * @param {number[]} options.leds - LED numbers to shift (minimum 2 LEDs required)
+     * @param {string} [options.direction='up'] - Shift direction ('up' or 'down')
+     * @param {boolean} [options.bouncing=false] - Whether to bounce direction
+     * @param {number} [options.bounceAfter] - Number of shifts before bouncing (min: 1)
+     * @throws {Error} When required options are missing or invalid
      */
     constructor(options) {
+        if (!options.shifts || typeof options.shifts !== 'number') {
+            throw new Error(`Shifting requires 'shifts' number, got: ${options.shifts}`);
+        }
+        if (!options.mapper) {
+            throw new Error("Shifting requires 'mapper' instance");
+        }
+        if (!Array.isArray(options.leds) || options.leds.length < 2) {
+            throw new Error("Shifting requires 'leds' array with at least 2 LEDs");
+        }
+        if (options.direction && !['up', 'down'].includes(options.direction)) {
+            throw new Error(`Invalid direction '${options.direction}', must be 'up' or 'down'`);
+        }
+
         super(options);
         this.brightnesses = [];
         this.options.direction = this.options.direction || 'up';
         this.options.bouncing = this.options.bouncing || false;
         this.options.bounceAfter = this.options.bounceAfter || this.options.leds.length;
-        if (!this.options.mapper) {
-            throw new Error("mandatory option mapper is missing!");
-        }
-        if (!('shifts' in this.options)) {
-            throw new Error("mandatory options shifts is missing!");
-        }
         this.timeline = null;
     }
 
+    
+
+    /**
+     * Called when the animation starts. Sets up the timeline and initializes
+     * the shifting sequence.
+     */
     onStart() {
         this.timeline = new TimeLine();
         for (var i = 0; i < this.options.leds.length; i++) {
@@ -65,6 +110,13 @@ class Shifting extends TimelineAnimation {
         this.timeline.setStartTime(this.absoluteStart);
     }
 
+    /**
+     * Shifts the LED states in the specified direction
+     * @param {Array<{led: number, brightness: number}>} input - Array of LED states to shift
+     * @param {string} direction - Direction to shift ('up' or 'down')
+     * @returns {Array<{led: number, brightness: number}>} Shifted LED states
+     * @throws {Error} When input array has less than 2 LEDs
+     */
     shift(input, direction) {
         var output = [], i = 0;
         if (input.length < 2) {
@@ -87,11 +139,18 @@ class Shifting extends TimelineAnimation {
         return output;
     }
 
+    /**
+     * Resets the animation timeline
+     */
     reset() {
         this.timeline.reset();
         super.reset();
     }
 
+    /**
+     * Renders the current animation frame
+     * @returns {Object.<string, number>} LED states for this frame, where key is LED number and value is brightness
+     */
     render() {
         var output = {};
         this.timeline.setCurrentPosition(this.absoluteCurrent);
@@ -104,6 +163,8 @@ class Shifting extends TimelineAnimation {
         }
         return output;
     } 
+
+   
 }
 
 export default Shifting;

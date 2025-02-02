@@ -8,74 +8,98 @@
     }
   },
   "pinmapper": {
-    "1": {
-      "driver": "A",
-      "pin": 0
-    },
-    "2": {
-      "driver": "A",
-      "pin": 1
-    },
-    "3": {
-      "driver": "A",
-      "pin": 2
-    },
-    "4": {
-      "driver": "A",
-      "pin": 3
-    },
-    "5": {
-      "driver": "A",
-      "pin": 4
-    },
-    "6": {
-      "driver": "A",
-      "pin": 5
-    },
-    "7": {
-      "driver": "A",
-      "pin": 6
-    },
-    "8": {
-      "driver": "A",
-      "pin": 7
-    },
-    "9": {
-      "driver": "A",
-      "pin": 14
-    },
-    "10": {
-      "driver": "A",
-      "pin": 15
-    },
-    "11": {
-      "driver": "A",
-      "pin": 11
-    },
-    "12": {
-      "driver": "A",
-      "pin": 13
-    },
-    "13": {
-      "driver": "A",
-      "pin": 12
-    },
-    "14": {
-      "driver": "A",
-      "pin": 10
-    },
-    "15": {
-      "driver": "A",
-      "pin": 9
-    },
-    "16": {
-      "driver": "A",
-      "pin": 8
-    },
-    "17": {
-      "driver": "A",
-      "pin": 7
-    }
+    "discoveredDevices": [
+      "0x40",
+      "0x41",
+      "0x60"
+    ],
+    "mapping": [
+      {
+        "driver": "0x41",
+        "pin": 15,
+        "step": 1
+      },
+      {
+        "driver": "0x41",
+        "pin": 14,
+        "step": 2
+      },
+      {
+        "driver": "0x41",
+        "pin": 13,
+        "step": 3
+      },
+      {
+        "driver": "0x41",
+        "pin": 11,
+        "step": 4
+      },
+      {
+        "driver": "0x41",
+        "pin": 12,
+        "step": 5
+      },
+      {
+        "driver": "0x60",
+        "pin": 11,
+        "step": 6
+      },
+      {
+        "driver": "0x60",
+        "pin": 10,
+        "step": 7
+      },
+      {
+        "driver": "0x60",
+        "pin": 9,
+        "step": 8
+      },
+      {
+        "driver": "0x60",
+        "pin": 8,
+        "step": 9
+      },
+      {
+        "driver": "0x60",
+        "pin": 5,
+        "step": 10
+      },
+      {
+        "driver": "0x60",
+        "pin": 6,
+        "step": 11
+      },
+      {
+        "driver": "0x60",
+        "pin": 7,
+        "step": 12
+      },
+      {
+        "driver": "0x60",
+        "pin": 4,
+        "step": 13
+      },
+      {
+        "driver": "0x60",
+        "pin": 3,
+        "step": 14
+      },
+      {
+        "driver": "0x60",
+        "pin": 2,
+        "step": 15
+      },
+      {
+        "driver": "0x60",
+        "pin": 1,
+        "step": 16
+      },
+      {
+        "driver": "0x60",
+        "pin": 0,
+        "step": 17
+      }
+    ]
   },
   "animations": {
     "LightEmUp!": []
@@ -83,14 +107,14 @@
   "mqtt": {
     "enabled": true,
     "hostname": "localhost",
-    "channel": "sensor"
+    "channel": "sensors"
   },
   "sensors": [
     {
       "enabled": true,
       "name": "Upstairs",
       "type": "MQTT",
-      "channel": "sensor",
+      "channel": "zolder-boven",
       "triggerTreshold": "800",
       "upperTreshold": "1000",
       "triggerType": "<=",
@@ -100,11 +124,30 @@
       "enabled": true,
       "name": "Sensor Downstairs",
       "type": "MQTT",
-      "channel": "sensor",
+      "channel": "zolder-beneden",
       "triggerTreshold": "600",
       "upperTreshold": "1000",
-    "triggerType": "<=",
+      "triggerType": "<=",
       "triggerEffect": "LightEmDown!"
     }
-  ]
+  ],
+  "ntp": {
+    "offTimes": [
+      {
+        "enabled": true,
+        "start": "12:00",
+        "end": "18:00"
+      },
+      {
+        "enabled": false,
+        "start": "00:00",
+        "end": "00:00"
+      },
+      {
+        "enabled": false,
+        "start": "00:00",
+        "end": "00:00"
+      }
+    ]
+  }
 }

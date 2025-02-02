@@ -38,7 +38,7 @@ class Wifi {
             res.json({ success: true, message: 'Additional settings saved' });
         }
 
-        app.webserver.get('/wifi', async function (req, res) {
+        app.webServer.get('/wifi', async function (req, res) {
             try {
                 const apName = nconf.get('wifi:accessPoint:name') || '';
                 const password = nconf.get('wifi:accessPoint:password') || '';
@@ -60,7 +60,7 @@ class Wifi {
             }
         });
 
-        app.webserver.get('/wifi/access-points', async function (req, res) {
+        app.webServer.get('/wifi/access-points', async function (req, res) {
                 const accessPoints = await scanNearbyAccessPoints();
 
                 res.json({ accessPoints });
@@ -68,10 +68,10 @@ class Wifi {
 
 
 
-        app.webserver.post('/wifi/access-point', handleAccessPointSettings);
-        app.webserver.post('/wifi/additional-settings', handleAdditionalSettings);
+        app.webServer.post('/wifi/access-point', handleAccessPointSettings);
+        app.webServer.post('/wifi/additional-settings', handleAdditionalSettings);
 
-        console.log("Wifi webserver routes added");
+        console.log("🛜 Wifi webserver routes added");
     }
 }
 
