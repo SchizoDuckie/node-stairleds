@@ -1,5 +1,7 @@
 import { eventBus, Events } from '../services/EventBus.js';
 import { animationService } from '../services/AnimationService.js';
+import Sensor from '../Sensor.js';
+
 class Sensors {
     constructor() {
         this.sensorDevices = [];
@@ -9,41 +11,83 @@ class Sensors {
        
         // Web routes
         app.webServer.get('/sensors', async (req, res) => {
-            const animations = await animationService.getAnimationsList();
-            
-            res.render('sensors', { 
-                title: 'Sensors',
-                sensorDevices: app.mdns.getDiscoveredDevices(),
-                effects: animations
-            });
+            try {
+                const animations = await animationService.getAnimationsList();
+                const discoveredDevices = app.mdns.getDiscoveredDevices();
+                const configuredSensors = app.config.get('sensors') || [];
+                
+                // Fix: Create a map of ALL configured sensors first
+                const sensorMap = new Map();
+                configuredSensors.forEach(config => {
+                    sensorMap.set(config.name, {
+                        ...config,
+                        connected: false // Default to offline until proven otherwise
+                    });
+                });
+
+                // Merge with discovered devices
+                discoveredDevices.forEach(device => {
+                    sensorMap.set(device.name, {
+                        ...(sensorMap.get(device.name) || {}), // Keep existing config if present
+                        ...device,
+                        connected: true
+                    });
+                });
+
+                // Convert map back to array for rendering
+                const mergedSensors = Array.from(sensorMap.values());
+
+                res.render('sensors', {
+                    title: 'Sensors',
+                    sensors: mergedSensors,
+                    effects: animations
+                });
+            } catch (error) {
+                console.error('Sensor route error:', error);
+                res.status(500).send('Error loading sensor page');
+            }
         });
 
         app.webServer.post("/sensors", (req, res) => {
-            
-            const posted = req.body;
-            eventBus.emit(Events.SENSOR_CONFIG, posted);
-            // Convert flat post structure to sensor config array
-            const sensorConfigs = Object.keys(posted).reduce((acc, key) => {
-                if (key.startsWith('sensor_')) {
-                    const [_, sensorName, field] = key.split('_');
-                    acc[sensorName] = acc[sensorName] || {name: sensorName};
-                    acc[sensorName][field] = posted[key];
+            try {
+                // Handle single sensor config
+                const config = {
+                    name: req.body.name,
+                    channel: Number(req.body.channel) || 0,
+                    triggerThreshold: Number(req.body.triggerThreshold) || 0,
+                    triggerType: req.body.triggerType,
+                    triggerEffect: req.body.triggerEffect
+                };
+
+                // Merge with existing sensors
+                const existingSensors = app.config.get('sensors') || [];
+                
+                // Find existing sensor index
+                const existingIndex = existingSensors.findIndex(s => s.name === config.name);
+                
+                if (existingIndex > -1) {
+                    // Merge existing config with new values
+                    existingSensors[existingIndex] = {
+                        ...existingSensors[existingIndex],
+                        ...config
+                    };
+                } else {
+                    // Add new sensor config
+                    existingSensors.push(config);
                 }
-                return acc;
-            }, {});
 
-            // Emit config updates and save
-            Object.values(sensorConfigs).forEach(config => {
-                eventBus.emit(Events.SENSOR_CONFIG, {
-                    name: config.name,
-                    triggerTreshold: parseFloat(config.tvalue),
-                    triggerType: config.tcondition,
-                    triggerEffect: config.effect
-                });
-            });
-
-            app.config.set('sensors', Object.values(sensorConfigs));
-            app.config.save();
+                // Update application state
+                app.sensors = existingSensors.map(s => new Sensor(s));
+                
+                // Save merged configurations
+                app.config.set('sensors', existingSensors);
+                app.config.save();
+                
+                res.sendStatus(200);
+            } catch (error) {
+                console.error('Sensor save error:', error);
+                res.status(500).send('Error saving sensor configuration');
+            }
         });
 
         // API routes

@@ -96,6 +96,7 @@ class AnimationService {
             }
 
             this.animations = newAnimations;
+            console.log('Loaded animations:', Array.from(newAnimations.keys()));
             eventBus.emit(Events.SYSTEM_INFO, `Loaded ${newAnimations.size} animations`);
             
         } catch (error) {

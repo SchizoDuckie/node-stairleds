@@ -73,7 +73,7 @@ class WebsocketServer {
     handleMessage(msg, client) {
         const startTime = performance.now();
         const messages = msg.toString().split('\n');
-        console.log(`📥 Processing batch of ${messages.length} messages`);
+        //console.log(`📥 Processing batch of ${messages.length} messages`);
         
         // Pre-allocate array with known size for better performance
         const responses = new Array();
@@ -103,11 +103,11 @@ class WebsocketServer {
         // Send all responses in a single message if there are any
         if (responses.length > 0) {
             client.send(responses.join('\n'));
-            console.log(`📤 Sent ${responses.length} responses`);
+            //console.log(`📤 Sent ${responses.length} responses`);
         }
         
         const duration = performance.now() - startTime;
-        console.log(`⚡ Processed batch in ${duration.toFixed(2)}ms (${(messages.length / duration * 1000).toFixed(2)} msgs/sec)`);
+        //console.log(`⚡ Processed batch in ${duration.toFixed(2)}ms (${(messages.length / duration * 1000).toFixed(2)} msgs/sec)`);
     }
     
     broadcast(message) {

@@ -111,24 +111,11 @@
   },
   "sensors": [
     {
-      "enabled": true,
-      "name": "Upstairs",
-      "type": "MQTT",
-      "channel": "zolder-boven",
-      "triggerTreshold": "800",
-      "upperTreshold": "1000",
+      "name": "stairled-sensor-zolder-boven",
+      "channel": 0,
+      "triggerThreshold": 64,
       "triggerType": "<=",
-      "triggerEffect": "LightEmUp!"
-    },
-    {
-      "enabled": true,
-      "name": "Sensor Downstairs",
-      "type": "MQTT",
-      "channel": "zolder-beneden",
-      "triggerTreshold": "600",
-      "upperTreshold": "1000",
-      "triggerType": "<=",
-      "triggerEffect": "LightEmDown!"
+      "triggerEffect": "center splash"
     }
   ],
   "ntp": {

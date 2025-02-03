@@ -97,8 +97,7 @@
       "name": "Upstairs",
       "type": "MQTT",
       "channel": "sensor",
-      "triggerTreshold": "800",
-      "upperTreshold": "1000",
+      "triggerThreshold": "800",
       "triggerType": "<=",
       "triggerEffect": "LightEmUp!"
     },
@@ -107,8 +106,7 @@
       "name": "Sensor Downstairs",
       "type": "MQTT",
       "channel": "sensor",
-      "triggerTreshold": "600",
-      "upperTreshold": "1000",
+      "triggerThreshold": "600",
     "triggerType": "<=",
       "triggerEffect": "LightEmDown!"
     }

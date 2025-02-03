@@ -1,8 +1,19 @@
 class ChartManager {
     constructor(sensorData, canvasElement) {
+        if (!canvasElement) {
+            console.error('Canvas element is null');
+            return;
+        }
+        
+        try {
+            this.ctx = canvasElement.getContext('2d');
+        } catch (error) {
+            console.error('Failed to get canvas context:', error);
+            return;
+        }
+        
         this.sensorData = [];  // Rolling buffer of data
         this.chart = null;
-        this.ctx = canvasElement.getContext('2d');
         this.granularity = 75; 
         this.lastUpdate = 0;    // Track last update time
         this.updateInterval = 1000/60; 
@@ -98,8 +109,8 @@ class ChartManager {
                     const value = Math.round(this.chart.scales.y.getValueForPixel(y));
                     console.log("Click value:", value);
                     
-                    // Update input field
-                    const inputId = 'triggerValue-' + this.ctx.canvas.id.replace('canvas-', '');
+                    // Update input field - FIXED ID CONSTRUCTION
+                    const inputId = 'triggerValue-' + this.ctx.canvas.id;
                     const input = document.getElementById(inputId);
                     console.log("Found input for update:", inputId, input);
                     if (input) input.value = value;
@@ -112,7 +123,7 @@ class ChartManager {
 
     initChart() {
         if (this.chart) {
-            this.chart.destroy();
+            return;
         }
         this.chart = new Chart(this.ctx, this.config);
     }
@@ -126,10 +137,10 @@ class ChartManager {
         
         this.triggerValue = value;
         
-        // Update input field again to be sure
-        const inputId = 'triggerValue-' + this.ctx.canvas.id.replace('canvas-', '');
-        const input = document.getElementById(inputId);
-        console.log("Found input in setTriggerValue:", inputId, input);
+        // Update input field within parent sensor card
+        const parentCard = this.ctx.canvas.closest('.sensor-card-wrapper');
+        const input = parentCard ? parentCard.querySelector(`input[name$="triggerThreshold"]`) : null;
+        console.log("Found input in setTriggerValue:", input);
         if (input) input.value = value;
         
         // Update trigger line
@@ -147,7 +158,10 @@ class ChartManager {
         }
 
         // Add new data to our rolling buffer
-        this.sensorData = [...this.sensorData, ...newData];
+        this.sensorData = [
+            ...this.sensorData, 
+            ...(Array.isArray(newData) ? newData : [newData])  // Wrap single objects in array
+        ];
         
         // Check if enough time has passed since last update
         const now = performance.now();

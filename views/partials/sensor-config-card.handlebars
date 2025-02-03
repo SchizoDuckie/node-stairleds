@@ -1,53 +1,71 @@
-<div class="col-12 col-lg-6 col-xl-4 mb-4">
-    <div class="card shadow h-100">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Sensor: {{name}}</h6>
-        </div>
-        <div class="card-body d-flex flex-column">
-            <!-- Chart container (original structure preserved) -->
-            <div class="chart-container flex-grow-1" style="position: relative; height: 300px;">
-                <canvas id="{{name}}" style="width:100%; height:100%;"></canvas>
+<div class="sensor-card-wrapper" data-sensor-name="{{name}}">
+    <div class="col-12 col-lg-6 col-xl-4 mb-4">
+        <div class="card shadow h-100">
+            <div class="card-header py-3 d-flex justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">{{name}}</h6>
+                {{#if connected}}
+                    <span class="badge bg-success">Connected</span>
+                {{else}}
+                    <span class="badge bg-danger">Offline</span>
+                {{/if}}
             </div>
-            
-            <!-- Configuration form (new additions below chart) -->
-            <div class="mt-3">
-                <form name="sensorConfig" data-sensor-name="{{name}}">
-                    <input type="hidden" name="sensor_{{name}}_name" value="{{name}}">
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Animation Effect:</label>
-                        <select class="form-select" name="sensor_{{name}}_effect">
-                            {{#each ../effects}}
-                            <option value="{{key}}" {{#if (eq key ../triggerEffect)}}selected{{/if}}>
-                                {{name}} - {{description}}
-                            </option>
-                            {{else}}
-                            <option disabled>No animations available</option>
-                            {{/each}}
-                        </select>
-                    </div>
+            <div class="card-body d-flex flex-column">
+                <!-- Chart container (original structure preserved) -->
+                <div class="chart-container flex-grow-1" style="position: relative; height: 300px;">
+                    <canvas id="{{name}}" style="width:100%; height:100%;"></canvas>
+                </div>
+                
+                <!-- Configuration form (new additions below chart) -->
+                <div class="mt-3">
+                    <form name="sensorConfig">
+                        <input type="hidden" name="sensor_{{name}}_name" value="{{name}}">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Channel:</label>
+                            <input type="number" class="form-control" 
+                                   name="sensor_{{name}}_channel" 
+                                   value="{{channel}}">
+                        </div>
 
-                    <div class="mb-3">
-                        <label class="form-label">Trigger Value:</label>
-                        <input type="number" class="form-control" 
-                               name="sensor_{{name}}_tvalue"
-                               value="{{triggerTreshold}}">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Trigger Condition:</label>
-                        <select class="form-select" name="sensor_{{name}}_tcondition">
-                            <option value="<=" {{#if (eq triggerType "<=")}}selected{{/if}}>Less than or equal</option>
-                            <option value=">=" {{#if (eq triggerType ">=")}}selected{{/if}}>Greater than or equal</option>
-                            <option value="==" {{#if (eq triggerType "==")}}selected{{/if}}>Exactly equal</option>
-                        </select>
-                    </div>
-
-                    <button type="button" class="btn btn-primary" 
-                            onclick="saveConfiguration(this.form)">
-                        Save Configuration
-                    </button>
-                </form>
+                        <div class="mb-3">
+                            <label class="form-label">Animation Effect:</label>
+                            <div class="text-muted small">Debug: Current selection = {{triggerEffect}}</div>
+                            <select class="form-select" name="sensor_{{name}}_triggerEffect">
+                                <option value="">Select an animation</option>
+                                {{#each effects}}
+                                    <option value="{{this.key}}" {{#if_eq ../triggerEffect this.key}}selected{{/if_eq}}>
+                                        {{this.name}} {{#if this.description}}({{this.description}}){{/if}}
+                                    </option>
+                                {{else}}
+                                    <option disabled>No effects loaded</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Trigger this animation when sensor value is:</label>
+                            <div class="row">
+                                <div class="col col-md-6">
+                                    <label class="form-label">Condition:</label>
+                                    <select class="form-select" name="sensor_{{name}}_triggerType">
+                                        <option value="<=" {{#if (eq triggerType "<=" )}}selected{{/if}}>Less than or equal</option>
+                                        <option value=">=" {{#if (eq triggerType ">=" )}}selected{{/if}}>Greater than or equal</option>
+                                        <option value="==" {{#if (eq triggerType "==" )}}selected{{/if}}>Exactly equal</option>
+                                    </select>
+                                </div>
+                                <div class="col col-md-6">
+                                    <label class="form-label">Threshold:</label>
+                                    <input type="number" class="form-control" 
+                                           name="sensor_{{name}}_triggerThreshold" 
+                                           id="triggerValue-{{name}}"
+                                           value="{{triggerThreshold}}">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary-outline" >
+                            Save Configuration
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

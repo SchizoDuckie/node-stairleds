@@ -33,7 +33,7 @@
                     <!-- Timeline Configuration -->
                     {{#with currentAnimation}}
                     <div class="card mb-4 border-primary">
-                        <div class="card-header">
+                        <div class="card-header bg-primary text-white">
                             <h4 class="mb-0">
                                 <i class="fas fa-stream me-2"></i>Animation Timeline
                                 <div class="float-end">
@@ -112,16 +112,20 @@
 
 <!-- Link to the extracted CSS -->
 <link rel="stylesheet" href="/css/stairspreview.css">
-<script src="/js/Sortable.min.js"></script>
-<script src="/js/animation-environment.js"></script>
-<script src="/js/stairs-preview.js"></script>
-<script src="/js/animations/index.js" type="module"></script>
-<script src="/js/animationengine/LedstripAnimation.js" type="module"></script>
 <script type="text/javascript">
+    // Proper animation timing polyfill
+    window.setImmediate = (fn) => setTimeout(fn, 0);
+    window.clearImmediate = clearTimeout;
+
     window.pinMappingData = {{{ json pinMapping }}};
     window.animationTypes = {{{ json animationTypes }}};
     console.log('Animation types loaded:', window.animationTypes);
 </script>
+
+<script src="/js/Sortable.min.js"></script>
+<script src="/js/stairs-preview.js"></script>
+<script src="/js/animations/index.js" type="module"></script>
+<script src="/js/animationengine/LedstripAnimation.js" type="module"></script>
    
 <script id="timeline-item-template" type="text/x-handlebars-template">
     {{{includeRaw 'timeline-item-template'}}}

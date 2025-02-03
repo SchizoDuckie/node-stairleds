@@ -38,7 +38,7 @@ class StairAnimation {
      * @private
      */
     initialize() {
-        this.animation = new LedstripAnimation(this.pinMapper);
+        this.animation = new LedstripAnimation(pinMapper);
         
         // Get all available steps from pin mapping
         const allSteps = pinMapper.pinMapping

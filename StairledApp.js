@@ -86,30 +86,47 @@ class StairledApp {
         // MQTT event handlers
         this.mqtt.on('log', message => eventBus.system('info', message));
         this.mqtt.on('error', error => eventBus.system('error', 'MQTT Error', error));
-        this.mqtt.on('sensorData', (sensor, value) => eventBus.emitData(Events.SENSOR_DATA, { sensor, value }));
+       // this.mqtt.on('sensorData', (sensor, value) => eventBus.emitData(Events.SENSOR_DATA, { sensor, value }));
+        
         this.mqtt.on('sensorDiscovered', sensor => eventBus.emitData(Events.SENSOR_DISCOVERED, { name: sensor }));
 
         
         this.eventBus.on(Events.SYSTEM_INFO, message => console.log("Eventbus info: ",  message));
         
         // create new sensor instances when a sensor is discovered
-        this.eventBus.on(Events.SENSOR_DISCOVERED, device => {
+        this.eventBus.on(Events.SENSOR_DISCOVERED, async (device) => {
             console.log("📡Sensor discovered: ", device);
             if (device && device.name) {
-                const sensorConfig = {
-                    name: device.name,
-                    topic: `stairled-sensor-${device.name}`,
-                    type: 'mqtt',
-                    enabled: true,
-                    triggerTreshold: 50,
-                    triggerType: '<=',
-                    triggerEffect: 'LightEmUp!',
-                    upperTreshold: 100
-                };
+                // FIRST check if we already have a config for this sensor
+                const existingConfig = this.config.get('sensors')?.find(s => s.name === device.name);
                 
-                const sensor = new Sensor(sensorConfig);
-                if (!this.sensors) this.sensors = [];
-                this.sensors.push(sensor);
+                // Use existing config if found, otherwise create new with defaults
+                const sensorConfig = existingConfig || {
+                    name: device.name,
+                    channel: 0,  // Default channel
+                    triggerThreshold: 50,
+                    triggerType: '<=',
+                    upperThreshold: 100
+                };
+
+                // Only create new sensor if it doesn't already exist
+                if (!this.sensors.some(s => s.name === device.name)) {
+                    const sensor = new Sensor(sensorConfig);
+                    this.sensors = this.sensors || [];
+                    this.sensors.push(sensor);
+                    
+                    // Only save to config if it's a new sensor
+                    if (!existingConfig) {
+                        this.config.set('sensors', this.sensors.map(s => ({
+                            name: s.name,
+                            channel: s.channel,
+                            triggerThreshold: s.triggerThreshold,
+                            triggerType: s.triggerType,
+                            triggerEffect: s.triggerEffect
+                        })));
+                        await this.config.save();
+                    }
+                }
             }
         });
 

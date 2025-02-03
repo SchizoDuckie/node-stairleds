@@ -2,6 +2,7 @@ import StairAnimation from '../animations/StairAnimation.js';
 import fs from 'fs/promises';
 import path from 'path';
 import AnimationConfigValidator from '../animations/interfaces/AnimationConfig.js';
+import { animationService } from '../services/AnimationService.js';
 
 /**
  * PCA9685 Handling and routes.
@@ -10,86 +11,16 @@ import AnimationConfigValidator from '../animations/interfaces/AnimationConfig.j
 class Effects {
 
     constructor()  {
-       this.animations = new Map();
        this.currentAnimation = null;
        console.log('Effects class initialized');
     }
-
-    /**
-     * Load all animation configurations from the config/animations directory
-     * @private
-     * @param {PinMapper} pinMapper
-     * @returns {Promise<Map<string, StairAnimation>>}
-     */
-    async loadAnimationConfigs(pinMapper) {
-        const animationsPath = path.join(process.cwd(), 'config', 'animations');
-        const files = await fs.readdir(animationsPath);
-        
-        for (const file of files) {
-            if (path.extname(file) === '.json') {
-                console.log('\n=== Loading Animation File ===');
-                console.log('File:', file);
-                
-                const configContent = await fs.readFile(path.join(animationsPath, file), 'utf8');
-                const config = JSON.parse(configContent);
-                const animationName = path.basename(file, '.json');
-                
-                console.log('Raw config:', JSON.stringify(config, null, 2));
-                
-                if (config.stepConfig) {
-                    config.stepConfig = config.stepConfig.map((group, idx) => {
-                        console.log(`\nProcessing step group ${idx}:`, group);
-                        
-                        // Ensure leds is an array of numbers
-                        const ledArray = Array.isArray(group.leds) ? group.leds : 
-                                       typeof group.leds === 'string' ? group.leds.split(',').map(s => parseInt(s.trim())) : 
-                                       [parseInt(group.leds)];
-                        
-                        console.log('Parsed LED array:', ledArray);
-                        
-                        // Map step numbers to LED mappings
-                        const mappedLeds = ledArray
-                            .map(step => {
-                                console.log(`Looking up mapping for step ${step}`);
-                                const mapping = pinMapper.pinMapping.find(m => m.step === step);
-                                if (!mapping) {
-                                    console.warn(`⚠️ No mapping found for step ${step}`);
-                                    return null;
-                                }
-                                console.log(`Found mapping:`, mapping);
-                                return { driver: mapping.driver, pin: mapping.pin };
-                            })
-                            .filter(led => led !== null);
-                        
-                        console.log('Final mapped LEDs:', mappedLeds);
-                        
-                        return {
-                            ...group,
-                            leds: mappedLeds
-                        };
-                    });
-                }
-                
-                console.log('\nFinal processed config:', JSON.stringify(config, null, 2));
-                
-                this.animations.set(animationName, new StairAnimation({
-                    name: animationName,
-                    ...config
-                }));
-            }
-        }
-        
-        return this.animations;
-    }
-
-
 
     /**
      * Register routes and websocket handlers
      * @param {StairledApp} app
      */
     async register(app) {
-        await this.loadAnimationConfigs(app.pinMapper);
+        await animationService.getAnimationsList();
 
         // Serve all files from animations directory
         app.webServer.get('/js/animations/:file', (req, res) => {
@@ -114,15 +45,15 @@ class Effects {
             // Decode the animation name from URL parameter
             const selectedAnimationName = req.query.animation ? 
                 decodeURIComponent(req.query.animation) : 
-                Array.from(this.animations.keys())[0];
+                Array.from(animationService.animations.keys())[0];
             
-            const selectedAnimation = this.animations.get(selectedAnimationName);
+            const selectedAnimation = animationService.animations.get(selectedAnimationName);
             
             console.log('\n=== Loading Effects Page ===');
             console.log('Selected animation:', selectedAnimationName);
             console.log('Raw animation config:', selectedAnimation);
 
-            const animationsArray = Array.from(this.animations).map(([key, animation]) => ({
+            const animationsArray = Array.from(animationService.animations).map(([key, animation]) => ({
                 key,
                 name: animation.name,
                 description: animation.description
@@ -202,7 +133,7 @@ class Effects {
                     await fs.writeFile(configPath, JSON.stringify(config, null, 2));
                     
                     // Update the existing animation INSTANCE CONFIG
-                    const animation = this.animations.get(config.name) || {};
+                    const animation = animationService.animations.get(config.name) || {};
                     animation.config = config;  // Directly replace the config reference
                     
                     // Force refresh the display properties
@@ -230,7 +161,7 @@ class Effects {
                 console.log('\n=== Starting Animation ===');
                 console.log('Animation name:', name);
                 
-                const animation = this.animations.get(name);
+                const animation = animationService.animations.get(name);
                 if (animation) {
                     if (this.currentAnimation) {
                         console.log('Stopping current animation');

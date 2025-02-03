@@ -15,4 +15,30 @@
     <script src="js/bs-init.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/handlebars.min.js"></script>
+    <script>
+         Handlebars.registerHelper({
+                eq: (a, b) => a === b,
+                if_eq: (a, b, opts) => a === b ? opts.fn(this) : opts.inverse(this),
+                if_neq: (a, b, opts) => a !== b ? opts.fn(this) : opts.inverse(this),
+                inc: (value) => parseInt(value) + 1,
+                json: (context) => JSON.stringify(context),
+                includes: (array, item) => array ? array.includes(item) : false,
+                range: (start, end) => {
+                    const range = [];
+                    for (let i = start; i <= end; i++) range.push(i);
+                    return range;
+                },
+                or: (...args) => args.slice(0, -1).some(Boolean),
+                and: (...args) => args.slice(0, -1).every(Boolean),
+                not: (value) => !value,
+                gt: (a, b) => a > b,
+                gte: (a, b) => a >= b,
+                lt: (a, b) => a < b,
+                lte: (a, b) => a <= b,
+                join: (array, separator) => {
+                    if (!Array.isArray(array)) return '';
+                    return array.join(separator);
+                }
+            });
+    </script>
 </head>

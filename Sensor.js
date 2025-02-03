@@ -12,14 +12,14 @@ class Sensor {
         this.name = config.name;
         this.type = config.type;
         this.channel = config.channel;
-        this.triggerTreshold = config.triggerTreshold;
+        this.triggerThreshold = config.triggerThreshold;
         this.triggerType = config.triggerType;
         this.triggerEffect = config.triggerEffect;
-        this.upperTreshold = config.upperTreshold;
         this.active = false;
         this.lastTriggered = null;
         this.lastLogTime = 0;
         
+
         // Get animation from centralized service
         this.anim = animationService.animations.get(this.triggerEffect);
         
@@ -28,40 +28,38 @@ class Sensor {
                 `Animation '${this.triggerEffect}' not found for sensor ${this.name}`);
         }
         
+        // Add instance tracking
+        this._instanceId = Symbol(config.name);
+        
         this.initEventListeners();
     }
 
-    initEventListeners() {
-        eventBus.on(Events.SENSOR_DATA, (sensorName, value) => {
-            if (sensorName !== this.name) return;
-            
-            const now = Date.now();
-            if (now - this.lastLogTime >= 1000) {
-                eventBus.emit(Events.SYSTEM_DEBUG, 
-                    `Sensor ${this.name} reading: ${value}`);
-                this.lastLogTime = now;
-            }
+    getNormalizedName()
+    {
+        return this.name.split('stairled-sensor-')[1] || this.name;
+    }
 
-            this.processTrigger(value);
+    initEventListeners() {
+        eventBus.on(`sensordata:${this.getNormalizedName()}`, (event) => {
+            if (event.sensor !== this.getNormalizedName()) return;
+            this.processTrigger(event.value);
         });
     }
 
     processTrigger(value) {
-        if(value > this.upperTreshold) return;
-
         switch (this.triggerType) {
             case "<=":
-                if (value <= this.triggerTreshold) {
+                if (value <= this.triggerThreshold) {
                     this.trigger(value);
                 }
                 break;
             case ">=":
-                if (value >= this.triggerTreshold) {
+                if (value >= this.triggerThreshold) {
                     this.trigger(value);
                 }
                 break;
             case "==":
-                if (value === this.triggerTreshold) {
+                if (value === this.triggerThreshold) {
                     this.trigger(value);
                 }
                 break;
@@ -74,7 +72,7 @@ class Sensor {
             this.lastTriggered = new Date();
             
             eventBus.emit(Events.SYSTEM_INFO, 
-                `Sensor '${this.name}' triggered! Measured ${value} ${this.triggerType} configured treshold ${this.triggerTreshold}. Starting LedstripAnimation '${this.triggerEffect}'`);
+                `Sensor '${this.name}' triggered! Measured ${value} ${this.triggerType} configured treshold ${this.triggerThreshold}. Starting LedstripAnimation '${this.triggerEffect}'`);
             
             setTimeout(() => { this.active=false }, 2000);
             
@@ -107,6 +105,17 @@ class Sensor {
                 eventBus.emit(Events.SYSTEM_ERROR, 
                     `Error during log insert into sqlite3: ${error.message}`);
             }
+        }
+    }
+
+    // Add method to update config without recreating instance
+    updateConfig(newConfig) {
+        Object.assign(this, newConfig);
+        this.anim = animationService.animations.get(this.triggerEffect);
+        
+        if (!this.anim) {
+            eventBus.emit(Events.SYSTEM_ERROR, 
+                `Animation '${this.triggerEffect}' not found for sensor ${this.name}`);
         }
     }
 }

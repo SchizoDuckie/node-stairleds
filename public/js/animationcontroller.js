@@ -23,8 +23,6 @@ export default class AnimationController {
      */
     initializeController(availableSteps) {
         window.addEventListener('load', () => {
-            this.registerHandlebarsHelpers();
-            this.pinMapper = new PreviewPinMapper();
             this.hardwareController = new HardwareAnimationController();
             this.currentAnimation = null;
             this.timelineItems = [];
@@ -393,7 +391,7 @@ export default class AnimationController {
             this.currentAnimation.stop();
             this.currentAnimation = null;
         }
-        this.pinMapper.setAllBrightness(0);
+        pinMapper.setAllBrightness(0);
         await this.hardwareController.clearAnimation();
     }
 
@@ -546,32 +544,6 @@ export default class AnimationController {
         this.updateTimelineOrder();
     }
 
-    registerHandlebarsHelpers() {
-        Handlebars.registerHelper({
-            eq: (a, b) => a === b,
-            if_eq: (a, b, opts) => a === b ? opts.fn(this) : opts.inverse(this),
-            if_neq: (a, b, opts) => a !== b ? opts.fn(this) : opts.inverse(this),
-            inc: (value) => parseInt(value) + 1,
-            json: (context) => JSON.stringify(context),
-            includes: (array, item) => array ? array.includes(item) : false,
-            range: (start, end) => {
-                const range = [];
-                for (let i = start; i <= end; i++) range.push(i);
-                return range;
-            },
-            or: (...args) => args.slice(0, -1).some(Boolean),
-            and: (...args) => args.slice(0, -1).every(Boolean),
-            not: (value) => !value,
-            gt: (a, b) => a > b,
-            gte: (a, b) => a >= b,
-            lt: (a, b) => a < b,
-            lte: (a, b) => a <= b,
-            join: (array, separator) => {
-                if (!Array.isArray(array)) return '';
-                return array.join(separator);
-            }
-        });
-    }
 
     /**
      * Handle bulk selection operations in LED selection modal

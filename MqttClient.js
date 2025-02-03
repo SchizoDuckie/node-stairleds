@@ -46,17 +46,17 @@ class MqttClient extends EventEmitter {
      * @returns {MqttClient} The current instance for method chaining.
      */
     connect() {
-        this.emit('log', "MQTT Client: Connecting to : " + this.mqttHost);
+        console.log("MQTT Client: Connecting to : " + this.mqttHost);
         this.client = mqtt.connect(this.mqttHost);
 
         this.client.on('connect', () => {
-            this.emit('log', "MQTT Client connected!");
+            console.log('log', "MQTT Client connected!");
             const subscriptionTopic = `${this.mqttChannel}/#`;
             this.client.subscribe(subscriptionTopic, (err) => {
                 if (!err) {
-                    this.emit('log', "MQTT Client subscribed to topic: " + subscriptionTopic);
+                    console.log('log', "MQTT Client subscribed to topic: " + subscriptionTopic);
                 } else {
-                    this.emit('error', "Error subscribing to MQTT topic: " + err);
+                    console.log('error', "Error subscribing to MQTT topic: " + err);
                 }
             });
         });
@@ -78,9 +78,11 @@ class MqttClient extends EventEmitter {
     onMessage(topic, message) {
         const sensor = topic.split('/').pop();
         const value = parseFloat(message.toString()) || 0;
-        
         // Emit generic sensor data event
-        eventBus.emit(Events.SENSOR_DATA, sensor, value);
+        if(topic.split('/')[0] === 'sensors') {
+            eventBus.emit(Events.SENSOR_DATA, sensor, value);
+            eventBus.emit(`sensordata:${sensor}`, {timestamp: Date.now(), sensor: sensor, value: value});
+        }
 
         // Update message queue
         this.messageQueue.push({
@@ -95,7 +97,7 @@ class MqttClient extends EventEmitter {
         // Update sensor data
         if (!this.sensorData[sensor]) {
             this.sensorData[sensor] = [];
-            this.emit('sensorDiscovered', sensor);
+            this.emit(Events.SENSOR_DISCOVERED, sensor);
         }
         
         this.sensorData[sensor].push({
@@ -105,8 +107,6 @@ class MqttClient extends EventEmitter {
         if (this.sensorData[sensor].length > 60) {
             this.sensorData[sensor].shift();
         }
-
-        this.emit('sensorData', sensor, value);
     }
 
     /**

@@ -1,14 +1,19 @@
 <h3 class="mb-4"><i class="fas fa-wifi" style="transform: rotateZ(90deg);"></i>&nbsp;Sensor Settings</h3>
 
-<!-- Add this section to display discovered sensor devices -->
+<!-- Discovered Devices Section -->
 <div class="card shadow mb-4">
     <div class="card-header py-3">
         <h6 class="m-0 font-weight-bold text-primary">Discovered Sensor Devices</h6>
     </div>
     <div class="card-body">
         <ul id="sensorDevicesList">
-            {{#each sensorDevices}}
-            <li>{{this.name}} (Address: {{this.address}}, Port: {{this.port}})</li>
+            {{#each discoveredDevices}}
+            <li>
+                {{this.name}} ({{this.address}}:{{this.port}})
+                <span class="badge bg-{{#if this.connected}}success{{else}}danger{{/if}}">
+                    {{#if this.connected}}Connected{{else}}Disconnected{{/if}}
+                </span>
+            </li>
             {{else}}
             <li>No devices discovered.</li>
             {{/each}}
@@ -16,230 +21,21 @@
     </div>
 </div>
 
-<!-- Sensor configurations container -->
+<!-- Configuration Cards -->
 <div id="sensorConfigurations" class="row">
-    {{#each sensorDevices}}
-        {{> sensor-config-card}}
+    {{#each sensors}}
+        {{> sensor-config-card effects=../effects}} 
     {{/each}}
 </div>
 
 <script id="sensor-config-card" type="text/x-handlebars-template">
-    <div class="col-12 col-lg-6 col-xl-4 mb-4">
-        <div class="card shadow h-100">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Sensor: \{{name}}</h6>
-            </div>
-            <div class="card-body d-flex flex-column">
-                <div class="chart-container flex-grow-1" style="position: relative; height: 300px;">
-                    <canvas id="\{{name}}" style="width:100%; height:100%;"></canvas>
-                </div>
-                <div class="mt-3">
-                    <div id="status-\{{name}}" class="mb-3">
-                        <!-- Status information will be inserted here -->
-                    </div>
-                    <div class="mb-3">
-                        <label for="triggerValue-\{{name}}" class="form-label">Trigger Value:</label>
-                        <input type="number" class="form-control" id="triggerValue-\{{name}}" value="\{{triggerValue}}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="triggerCondition-\{{name}}" class="form-label">Trigger Condition:</label>
-                        <input type="text" class="form-control" id="triggerCondition-\{{name}}" value="\{{triggerCondition}}">
-                    </div>
-                    <button class="btn btn-primary" onclick="saveConfiguration('\{{name}}')">Save Configuration</button>
-                </div>
-            </div>
-        </div>
-    </div>
+{{{includeRaw 'sensor-config-card'}}}
 </script>
 
 <script>
-    let charts = {};
-    let socket;
-    const MAX_RECONNECT_ATTEMPTS = 5;
-    let reconnectAttempts = 0;
-    let chartsInitialized = false;
-
-    window.onload = function () {
-        refreshSensorDevices();
-        setInterval(refreshSensorDevices, 5000);
-        initializeWebSocket();
-        
-        // Initialize charts for existing devices
-        document.querySelectorAll('[data-sensor-name]').forEach(card => {
-            const name = card.dataset.sensorName;
-            initializeChart({ name });
-        });
-    };
-
-    function initializeWebSocket() {
-        if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-            console.error('Max reconnection attempts reached. Please refresh the page.');
-            return;
-        }
-
-        socket = new WebSocket('ws://' + window.location.host + '/ws');
-        
-        socket.onopen = function() {
-            console.log('WebSocket connected');
-            reconnectAttempts = 0;
-            getChartDataPoint();
-        };
-
-        socket.onclose = function() {
-            console.log('WebSocket disconnected. Reconnecting...');
-            reconnectAttempts++;
-            setTimeout(initializeWebSocket, 5000);
-        };
-
-        socket.onerror = function(error) {
-            console.error('WebSocket error:', error);
-        };
-
-        socket.onmessage = function (result) {
-            try {
-                let messages = JSON.parse(result.data);
-                if (!Array.isArray(messages)) { return; }
-                
-                let sensorData = {};
-                
-                messages.forEach(message => {
-                    let chartSensorName = 'stairled-sensor-' + message.sensor;
-                    if (!charts[chartSensorName]) return;
-                    
-                    if (!sensorData[chartSensorName]) {
-                        sensorData[chartSensorName] = [];
-                    }
-                    sensorData[chartSensorName].push({
-                        timestamp: message.timestamp,
-                        value: message.value
-                    });
-                });
-
-                // Simply update each chart with its data
-                for (let sensorName in sensorData) {
-                    if (charts[sensorName]?.chartManager) {
-                        charts[sensorName].chartManager.updateChart(sensorData[sensorName]);
-                    }
-                }
-
-            } catch (error) {
-                console.error('Error processing WebSocket message:', error);
-            }
-        };
-    }
-
-    function getChartDataPoint() {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send('mqttlog');
-            setTimeout(getChartDataPoint, 150);
-        } else {
-            setTimeout(getChartDataPoint, 1000);
-        }
-    }
-
-    function initializeChart(device) {
-        if(charts[device.name]) return; // already initialized
-        const canvas = document.querySelector(`canvas#${device.name}`);
-        if (canvas) {
-            console.log(`inside initializeChart for ${device.name}`, canvas);
-            charts[device.name] = {
-                startTime: Date.now(),
-                chartManager: new ChartManager([], canvas, {
-                    xMin: -60,  // Show last 60 seconds
-                    xMax: 0,    // Current time (0 seconds ago)
-                    fixedScale: true  // Ensure the scale stays fixed
-                })
-            };
-            charts[device.name].chartManager.initChart();
-        } else {
-            console.error(`Canvas not found for ${device.name}`);
-        }
-    }
-
-    function refreshSensorDevices() {
-        fetch('/api/sensor-devices')
-            .then(response => response.json())
-            .then(devices => {
-                // Initialize charts once we have device data
-                return Promise.all(devices.map(device => fetchSensorStatus(device)));
-            })
-            .then(devicesWithStatus => {
-                updateSensorConfigurations(devicesWithStatus);
-            })
-            .catch(error => {
-                console.error('Error fetching sensor devices:', error);
-            });
-    }
-
-    function fetchSensorStatus(device) {
-        return fetch(`http://${device.address}/api/sensor-status`)
-            .then(response => response.json())
-            .then(status => {
-                return { ...device, ...status };
-            })
-            .catch(error => {
-                console.error(`Error fetching status for sensor ${device.name}:`, error);
-                return device; // Return the original device object if fetch fails
-            });
-    }
-
-    function updateSensorConfigurations(devices) {
-        const sensorContainer = document.getElementById('sensorConfigurations');
-        const template = document.getElementById('sensor-config-card').innerHTML;
-        const compiledTemplate = Handlebars.compile(template);
-        
-        // Clear existing cards
-        sensorContainer.innerHTML = '';
-        
-        devices.forEach(device => {
-            const html = compiledTemplate({
-                ...device,
-                effects: window.effects // Pass effects from server-side render
-            });
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = html;
-            sensorContainer.appendChild(tempDiv.firstElementChild);
-            initializeChart(device);
-        });
-    }
-
-    function createSensorConfigCard(device) {
-        const template = document.getElementById('sensor-config-card').innerHTML;
-        const compiledTemplate = Handlebars.compile(template);
-        const html = compiledTemplate(device);
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-        return tempDiv.firstElementChild;
-    }
-
-    function saveConfiguration(form) {
-        const formData = new FormData(form);
-        const params = new URLSearchParams(formData);
-
-        fetch('/sensors', {
-            method: 'POST',
-            body: params,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Failed to save configuration');
-            console.log('Configuration saved successfully');
-        })
-        .catch(error => {
-            console.error('Error saving configuration:', error);
-        });
-    }
-
-    function updateSensorConfigurations(devices) {
-        devices.forEach(device => {
-            const card = document.querySelector(`[data-sensor-name="${device.name}"]`);
-            if (card) {
-                card.querySelector('[name$="_effect"]').value = device.triggerEffect || '';
-                card.querySelector('[name$="_tvalue"]').value = device.triggerTreshold || 0;
-                card.querySelector('[name$="_tcondition"]').value = device.triggerType || '>=';
-            }
-        });
-    }
+    window.sensors = {{{ json sensors }}};
+    window.effects = {{{ json effects }}};
 </script>
+
+<script src="/js/SensorManager.js"></script>
+<script src="/js/SensorConfigCard.js"></script>
