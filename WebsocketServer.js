@@ -1,6 +1,20 @@
 import WebSocket from 'ws';
 import http from 'http';
 
+/**
+ * Polyfill for older node versions
+ */
+if (!globalThis.performance?.now) {
+  const startTime = process.hrtime();
+  globalThis.performance = {
+    now: function () {
+      const diff = process.hrtime(startTime);
+      return diff[0] * 1000 + diff[1] / 1e6; // Convert to milliseconds
+    },
+  };
+}
+
+
 class WebsocketServer {
     constructor() {
         this.wss = null;
